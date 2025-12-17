@@ -276,52 +276,6 @@
         </div>
     </div>
 
-    <script>
-        // Capture mode selection
-        const captureOptions = document.querySelectorAll('.capture-option');
-        captureOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                captureOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-            });
-        });
-
-        // Toggle switch
-        const toggle = document.getElementById('showPointerToggle');
-        toggle.addEventListener('click', () => {
-            toggle.classList.toggle('active');
-        });
-
-        // Delay counter
-        const delayValue = document.getElementById('delayValue');
-        const decreaseBtn = document.getElementById('decreaseDelay');
-        const increaseBtn = document.getElementById('increaseDelay');
-        let delay = 0;
-
-        decreaseBtn.addEventListener('click', () => {
-            if (delay > 0) {
-                delay--;
-                delayValue.textContent = delay;
-            }
-        });
-
-        increaseBtn.addEventListener('click', () => {
-            delay++;
-            delayValue.textContent = delay;
-        });
-
-        // Window controls (for Electron)
-        document.getElementById('closeBtn').addEventListener('click', () => {
-            if (window.electronAPI) {
-                window.electronAPI.closeWindow();
-            }
-        });
-
-        document.getElementById('minimizeBtn').addEventListener('click', () => {
-            if (window.electronAPI) {
-                window.electronAPI.minimizeWindow();
-            }
-        });
-    </script>
+    <script src="../renderer.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
-import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'node:path';
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -7,16 +7,30 @@ function createWindow() {
     height: 350,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true, // Be cautious with nodeIntegration in production
-      contextIsolation: false, // For simpler initial setup
+      nodeIntegration: false,
+      contextIsolation: true,
     },
-    frame: false
+    frame: true,
   });
 
   mainWindow.loadFile('./src/index.html');
 }
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+
+  ipcMain.on('capture', () => {
+    console.log('Capture clicked');
+  });
+
+  ipcMain.on('hide', () => {
+    console.log('Hide clicked');
+  });
+
+  ipcMain.on('cancel', () => {
+    console.log('Cancel clicked');
+  });
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
