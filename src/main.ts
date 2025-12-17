@@ -10,26 +10,26 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
     },
-    frame: true,
+    frame: false,
   });
 
   mainWindow.loadFile('./src/index.html');
-}
-
-app.on('ready', () => {
-  createWindow();
 
   ipcMain.on('capture', () => {
     console.log('Capture clicked');
   });
 
   ipcMain.on('hide', () => {
-    console.log('Hide clicked');
+    mainWindow.minimize();
   });
 
   ipcMain.on('cancel', () => {
-    console.log('Cancel clicked');
+    mainWindow.close();
   });
+}
+
+app.on('ready', () => {
+  createWindow();
 
   ipcMain.on('screen', () => {
     console.log('Screen clicked');
