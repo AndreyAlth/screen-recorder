@@ -7,5 +7,10 @@ declare global {
             hide: () => void
             cancel: () => void
         }
+        captureArea: {
+            screen: () => void
+            window: () => void
+            section: () => void
+        }
     }
 }

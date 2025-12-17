@@ -30,6 +30,18 @@ app.on('ready', () => {
   ipcMain.on('cancel', () => {
     console.log('Cancel clicked');
   });
+
+  ipcMain.on('screen', () => {
+    console.log('Screen clicked');
+  });
+
+  ipcMain.on('window', () => {
+    console.log('Window clicked');
+  });
+
+  ipcMain.on('section', () => {
+    console.log('Section clicked');
+  });
 });
 
 app.on('window-all-closed', () => {

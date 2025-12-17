@@ -5,3 +5,9 @@ contextBridge.exposeInMainWorld('menu', {
   hide: () => ipcRenderer.send('hide'),
   cancel: () => ipcRenderer.send('cancel'),
 })
+
+contextBridge.exposeInMainWorld('captureArea', {
+    screen: () => ipcRenderer.send('screen'),
+    window: () => ipcRenderer.send('window'),
+    section: () => ipcRenderer.send('section'),
+})
