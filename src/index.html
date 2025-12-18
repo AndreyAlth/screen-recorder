@@ -216,6 +216,66 @@
             color: #fff;
         }
     </style>
+    <style>
+        #region-selector {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  cursor: crosshair;
+}
+
+#region-selector .screenshot-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7);
+}
+
+#region-selector .selection-box {
+  display: none;
+  position: absolute;
+  border: 2px dashed #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+  pointer-events: none;
+}
+
+#region-selector .instructions {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.source-picker .source-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.source-item {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 8px;
+  transition: border-color 0.2s;
+}
+
+.source-item:hover {
+  border-color: #007bff;
+}
+
+.source-item img {
+  width: 100%;
+  border-radius: 4px;
+}
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -277,6 +337,7 @@
     </div>
 
     <script src="../renderer.js"></script>
+    <script src="../screen-renderer.js"></script>
     <script>
         // Capture mode selection
         const captureOptions = document.querySelectorAll('.capture-option');

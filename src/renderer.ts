@@ -5,14 +5,10 @@ const screenbtn = document.getElementById('screen')
 const windowbtn = document.getElementById('window')
 const selectionbtn = document.getElementById('selection')
 
-console.log(capture)
-console.log(hide)
-console.log(cancel)
 
-capture?.addEventListener('click', () => {
-    console.log('Capture clicked')
-    window.menu.capture()
-})
+// ============================================
+// Menu bottons
+// ============================================
 
 hide?.addEventListener('click', () => {
     console.log('Hide clicked')
@@ -24,19 +20,27 @@ cancel?.addEventListener('click', () => {
     window.menu.cancel()
 })
 
+// ============================================
+// Capture bottons
+// ============================================
+
+capture?.addEventListener('click', () => {
+    console.log('Capture clicked')
+    window.screenAPI.captureSource('screen')
+})
+
+
+
 screenbtn?.addEventListener('click', () => {
-    console.log('Screen clicked')
-    window.captureArea.screen()
+    window.appState.setSourceType('screen')
 })
 
 windowbtn?.addEventListener('click', () => {
-    console.log('Window clicked')
-    window.captureArea.window()
+    window.appState.setSourceType('window')
 })
 
 selectionbtn?.addEventListener('click', () => {
-    console.log('Selection clicked')
-    window.captureArea.section()
+    window.appState.setSourceType('region')
 })
 
 
