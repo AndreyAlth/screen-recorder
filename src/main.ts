@@ -19,10 +19,6 @@ function createWindow() {
 
   mainWindow.loadFile('./src/index.html');
 
-  ipcMain.on('capture', () => {
-    console.log('Capture clicked');
-  });
-
   ipcMain.on('hide', () => {
     mainWindow.minimize();
   });
@@ -34,18 +30,6 @@ function createWindow() {
 
 app.on('ready', () => {
   createWindow();
-
-  ipcMain.on('screen', () => {
-    console.log('Screen clicked');
-  });
-
-  ipcMain.on('window', () => {
-    console.log('Window clicked');
-  });
-
-  ipcMain.on('section', () => {
-    console.log('Section clicked');
-  });
 
   // State management
   ipcMain.on('set-source-type', (_event, type: 'screen' | 'window' | 'region') => {
@@ -89,33 +73,37 @@ ipcMain.handle('capture-source', async (event, sourceId: string) => {
     thumbnailSize: { width: 3840, height: 2160 } // High resolution
   });
 
-  const source = sources.find(s => s.id === sourceId);
-  if (!source) {
-    throw new Error('Source not found');
-  }
-
-  return source.thumbnail.toDataURL();
-});
-
-// Save screenshot to file
-ipcMain.handle('save-screenshot', async (event, dataUrl: string, defaultPath?: string) => {
-  const { filePath } = await dialog.showSaveDialog({
-    defaultPath: defaultPath || `screenshot-${Date.now()}.png`,
-    filters: [
-      { name: 'PNG Image', extensions: ['png'] },
-      { name: 'JPEG Image', extensions: ['jpg', 'jpeg'] }
-    ]
+  sources.forEach(async source => {
+    try {
+      const filename = `${source.name.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
+      // const savePath = path.join(app.getPath('pictures'), filename);
+      const savePath = '/home/andreyalth/Descargas/' + filename
+      console.log(savePath)
+      await saveScreenshot(source.thumbnail.toDataURL(), savePath);
+    } catch (error) {
+      console.log(error)
+    }
   });
 
-  if (filePath) {
-    // Convert data URL to buffer
-    const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
-    const buffer = Buffer.from(base64Data, 'base64');
-    fs.writeFileSync(filePath, buffer);
-    return filePath;
-  }
-  return null;
+  // const source = sources.find(s => s.id === sourceId);
+  // if (!source) {
+  //   throw new Error('Source not found');
+  // }
+
+  // return source.thumbnail.toDataURL();
 });
+
+async function saveScreenshot(dataUrl: string, filePath?: string) {
+  // Use provided path or generate a default one
+  const savePath = filePath || `screenshot-${Date.now()}.png`;
+  
+  // Convert data URL to buffer
+  const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
+  const buffer = Buffer.from(base64Data, 'base64');
+  fs.writeFileSync(savePath, buffer);
+  
+  return savePath;
+}
 
 // Get screen dimensions (for region capture)
 ipcMain.handle('get-screen-size', () => {

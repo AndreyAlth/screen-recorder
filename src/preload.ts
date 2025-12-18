@@ -28,10 +28,6 @@ contextBridge.exposeInMainWorld('screenAPI', {
   captureSource: (sourceId: string): Promise<string> => 
     ipcRenderer.invoke('capture-source', sourceId),
 
-  // Save screenshot to disk
-  saveScreenshot: (dataUrl: string, defaultPath?: string): Promise<string | null> => 
-    ipcRenderer.invoke('save-screenshot', dataUrl, defaultPath),
-
   // Get screen dimensions
   getScreenSize: (): Promise<ScreenSize> => 
     ipcRenderer.invoke('get-screen-size')
