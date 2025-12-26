@@ -1,12 +1,13 @@
-import { app, BrowserWindow, ipcMain, desktopCapturer, dialog, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, desktopCapturer, screen } from 'electron';
 import path from 'node:path';
 import fs from 'fs'
 
 // Global state stored in main process
 let sourceType: 'screen' | 'window' | 'region' = 'screen';
+let mainWindow: BrowserWindow | null = null;
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 400,
     height: 350,
     webPreferences: {
@@ -14,17 +15,17 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
     },
-    frame: false,
+    frame: true,
   });
 
   mainWindow.loadFile('./src/index.html');
 
   ipcMain.on('hide', () => {
-    mainWindow.minimize();
+    mainWindow?.minimize();
   });
 
   ipcMain.on('cancel', () => {
-    mainWindow.close();
+    mainWindow?.close();
   });
 }
 
@@ -48,6 +49,18 @@ app.on('window-all-closed', () => {
   }
 });
 
+async function saveScreenshot(dataUrl: string, filePath?: string) {
+  // Use provided path or generate a default one
+  const savePath = filePath || `screenshot-${Date.now()}.png`;
+  
+  // Convert data URL to buffer
+  const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
+  const buffer = Buffer.from(base64Data, 'base64');
+  fs.writeFileSync(savePath, buffer);
+  
+  return savePath;
+}
+
 // Get all available sources (screens and windows)
 ipcMain.handle('get-sources', async () => {
   const sources = await desktopCapturer.getSources({
@@ -67,23 +80,34 @@ ipcMain.handle('get-sources', async () => {
 });
 
 // Capture a specific source (screen or window)
-ipcMain.handle('capture-source', async (event, sourceId: string) => {
+ipcMain.handle('capture-source', async (event, sourceId: 'screen' | 'window') => {
+  console.log(sourceId)
   const sources = await desktopCapturer.getSources({
-    types: ['window', 'screen'],
+    types: [sourceId],
     thumbnailSize: { width: 3840, height: 2160 } // High resolution
   });
 
-  sources.forEach(async source => {
-    try {
-      const filename = `${source.name.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
-      // const savePath = path.join(app.getPath('pictures'), filename);
-      const savePath = '/home/andreyalth/Descargas/' + filename
-      console.log(savePath)
-      await saveScreenshot(source.thumbnail.toDataURL(), savePath);
-    } catch (error) {
-      console.log(error)
-    }
-  });
+  const sourcesMap = sources.map(source => ({
+    id: source.id,
+    name: source.name,
+    thumbnail: source.thumbnail.toDataURL(),
+    appIcon: source.appIcon?.toDataURL() || null,
+    displayId: source.display_id
+  }));
+
+  mainWindow?.webContents.send('set-files', sourcesMap);
+
+  // sources.forEach(async source => {
+  //   try {
+  //     const filename = `${source.name.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
+  //     // const savePath = path.join(app.getPath('pictures'), filename);
+  //     const savePath = '/home/andreyalth/Descargas/' + filename
+  //     console.log(savePath)
+  //     await saveScreenshot(source.thumbnail.toDataURL(), savePath);
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // });
 
   // const source = sources.find(s => s.id === sourceId);
   // if (!source) {
@@ -93,17 +117,13 @@ ipcMain.handle('capture-source', async (event, sourceId: string) => {
   // return source.thumbnail.toDataURL();
 });
 
-async function saveScreenshot(dataUrl: string, filePath?: string) {
-  // Use provided path or generate a default one
-  const savePath = filePath || `screenshot-${Date.now()}.png`;
-  
-  // Convert data URL to buffer
-  const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
-  const buffer = Buffer.from(base64Data, 'base64');
-  fs.writeFileSync(savePath, buffer);
-  
-  return savePath;
-}
+// Save screenshot
+ipcMain.handle('save-screenshot', async (event, dataUrl: string, filePath?: string) => {
+  const filename = `${dataUrl.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
+  const savePath = '/home/andreyalth/Descargas/' + filename
+  return await saveScreenshot(dataUrl, savePath);
+});
+
 
 // Get screen dimensions (for region capture)
 ipcMain.handle('get-screen-size', () => {

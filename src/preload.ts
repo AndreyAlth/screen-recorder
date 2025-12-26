@@ -30,5 +30,18 @@ contextBridge.exposeInMainWorld('screenAPI', {
 
   // Get screen dimensions
   getScreenSize: (): Promise<ScreenSize> => 
-    ipcRenderer.invoke('get-screen-size')
+    ipcRenderer.invoke('get-screen-size'),
+
+  // Save screenshot
+  saveScreenshot: (dataUrl: string, defaultPath?: string): Promise<string | null> => 
+    ipcRenderer.invoke('save-screenshot', dataUrl, defaultPath)
+
 });
+
+contextBridge.exposeInMainWorld('files', {
+    setFiles: (callback: (sources: ScreenSource[]) => void) => {
+        ipcRenderer.on('set-files', (event, sources: any) => {
+            callback(sources)
+        })
+    }
+})

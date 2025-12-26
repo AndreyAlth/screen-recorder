@@ -26,5 +26,8 @@ declare global {
             getSourceType: () => Promise<SourceType>
         }
         screenAPI: ScreenAPI
+        files: {
+            setFiles: (callback: (sources: ScreenSource[]) => void) => void
+        }
     }
 }

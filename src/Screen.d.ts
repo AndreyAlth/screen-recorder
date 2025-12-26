@@ -1,7 +1,7 @@
 interface ScreenSource {
   id: string;
   name: string;
-  thumbnail: string;
+  thumbnail: NativeImage;
   appIcon: string | null;
   displayId: string;
 }
