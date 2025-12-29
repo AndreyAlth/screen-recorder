@@ -121,17 +121,24 @@ window.files.setFiles((sources: ScreenSource[]) => {
             const dataUrl = canvas.toDataURL('image/png')
             window.screenAPI.saveScreenshot(source.name, dataUrl).then((path) => {
                 if (path) {
-                    console.log('Screenshot saved to:', path)
+                    saveBtn.textContent = 'saved'
+                    saveBtn.style.backgroundColor = 'gray'
+                    saveBtn.style.cursor = 'default'
+                    saveBtn.disabled = true
                 }
             })
         })
         
         // Hover effect for save button
         saveBtn.addEventListener('mouseenter', () => {
-            saveBtn.style.backgroundColor = '#4caf50'
+            if (!saveBtn.disabled) {
+                saveBtn.style.backgroundColor = '#4caf50'
+            }
         })
         saveBtn.addEventListener('mouseleave', () => {
-            saveBtn.style.backgroundColor = '#0c6d1a'
+            if (!saveBtn.disabled) {
+                saveBtn.style.backgroundColor = '#0c6d1a'
+            }
         })
         
         // Add hover effect
