@@ -24,6 +24,7 @@ cancel?.addEventListener('click', () => {
 
 capture?.addEventListener('click', () => {
     window.appState.getSourceType().then((sourceType) => {
+        console.log(sourceType)
         window.screenAPI.captureSource(sourceType)
     })
 })
@@ -39,7 +40,7 @@ windowbtn?.addEventListener('click', () => {
 })
 
 selectionbtn?.addEventListener('click', () => {
-    window.appState.setSourceType('region')
+    window.appState.setSourceType('section')
 })
 
 //show images

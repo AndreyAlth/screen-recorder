@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Select Region</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+      cursor: crosshair;
+      user-select: none;
+    }
+
+    #screenshot-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      /* filter: brightness(0.5); */
+    }
+
+    #selection-box {
+      position: fixed;
+      border: 2px solid #00aaff;
+      background: transparent;
+      display: none;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Show the original brightness inside selection */
+    #selection-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: inherit;
+    }
+
+    #highlight-area {
+      position: fixed;
+      pointer-events: none;
+      z-index: 5;
+      display: none;
+    }
+
+    #dimensions {
+      position: fixed;
+      background: rgba(0, 0, 0, 0.8);
+      color: #00aaff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      z-index: 20;
+      display: none;
+    }
+
+    #instructions {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      z-index: 100;
+    }
+
+    kbd {
+      background: #333;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin: 0 2px;
+    }
+  </style>
+</head>
+<body>
+  <img id="screenshot-bg" src="" alt="">
+  <!-- <img id="highlight-area" src="" alt=""> -->
+  <div id="selection-box"></div>
+  <div id="dimensions"></div>
+  <div id="instructions">
+    Click and drag to select area · Press <kbd>ESC</kbd> to cancel · Release to capture
+  </div>
+
+  <script src="../renderers/selection-renderer.js"></script>
+</body>
+</html>

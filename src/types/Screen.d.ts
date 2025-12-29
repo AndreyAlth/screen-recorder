@@ -11,3 +11,5 @@ interface ScreenSize {
   height: number;
   scaleFactor: number;
 }
+
+type SourceType = 'screen' | 'window' | 'section'

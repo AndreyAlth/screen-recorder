@@ -1,19 +1,21 @@
-import { app, BrowserWindow, ipcMain, desktopCapturer, screen } from 'electron';
+import { app, BrowserWindow, ipcMain, desktopCapturer, screen, nativeImage, dialog } from 'electron';
 import path from 'node:path';
 import fs from 'fs'
 
 // Global state stored in main process
-let sourceType: 'screen' | 'window' | 'region' = 'screen';
+let sourceType: SourceType = 'section';
 let mainWindow: BrowserWindow | null = null;
+let selectionWindow: BrowserWindow | null = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 400,
-    height: 350,
+    height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preloads/preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: true
     },
     frame: true,
   });
@@ -33,7 +35,7 @@ app.on('ready', () => {
   createWindow();
 
   // State management
-  ipcMain.on('set-source-type', (_event, type: 'screen' | 'window' | 'region') => {
+  ipcMain.on('set-source-type', (_event, type: SourceType) => {
     sourceType = type;
   });
 
@@ -79,7 +81,11 @@ ipcMain.handle('get-sources', async () => {
 });
 
 // Capture a specific source (screen or window)
-ipcMain.handle('capture-source', async (event, sourceId: 'screen' | 'window') => {
+ipcMain.handle('capture-source', async (event, sourceId: SourceType) => {
+  if (sourceId === 'section') {
+    captureSection()
+    return
+  }
   const sources = await desktopCapturer.getSources({
     types: [sourceId],
     thumbnailSize: { width: 3840, height: 2160 } // High resolution
@@ -94,25 +100,6 @@ ipcMain.handle('capture-source', async (event, sourceId: 'screen' | 'window') =>
   }));
 
   mainWindow?.webContents.send('set-files', sourcesMap);
-
-  // sources.forEach(async source => {
-  //   try {
-  //     const filename = `${source.name.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
-  //     // const savePath = path.join(app.getPath('pictures'), filename);
-  //     const savePath = '/home/andreyalth/Descargas/' + filename
-  //     console.log(savePath)
-  //     await saveScreenshot(source.thumbnail.toDataURL(), savePath);
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // });
-
-  // const source = sources.find(s => s.id === sourceId);
-  // if (!source) {
-  //   throw new Error('Source not found');
-  // }
-
-  // return source.thumbnail.toDataURL();
 });
 
 // Save screenshot
@@ -131,4 +118,146 @@ ipcMain.handle('get-screen-size', () => {
     height: primaryDisplay.size.height,
     scaleFactor: primaryDisplay.scaleFactor
   };
+});
+
+// ============================================
+// SECTION CAPTURE - Start the process
+// ============================================
+async function captureSection() {
+    // Step 1: Get the primary display info
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.size;
+  console.log(screen)
+  const scaleFactor = primaryDisplay.scaleFactor;
+
+  // Step 2: Capture the full screen first
+  const sources = await desktopCapturer.getSources({
+    types: ['screen'],
+    thumbnailSize: { 
+      width: width * scaleFactor, 
+      height: height * scaleFactor 
+    }
+  });
+
+  const screenSource = sources[0];
+  if (!screenSource) {
+    throw new Error('No screen source found');
+  }
+
+  const screenshotDataUrl = screenSource.thumbnail.toDataURL();
+
+  // Step 3: Hide main window during selection
+  mainWindow?.hide();
+
+  // Step 4: Create fullscreen selection window
+  selectionWindow = new BrowserWindow({
+    width,
+    height,
+    x: 0,
+    y: 0,
+    frame: false,
+    transparent: true,
+    fullscreen: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, '/preloads/preload-selection.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      devTools: true,
+    }
+  });
+
+  // Load selection HTML
+  selectionWindow.loadFile('./src/selection.html');
+
+  // Send screenshot to selection window once ready
+  selectionWindow.webContents.once('did-finish-load', () => {
+    selectionWindow?.webContents.send('set-screenshot', {
+      dataUrl: screenshotDataUrl,
+      scaleFactor
+    });
+  });
+}
+
+// ============================================
+// SECTION CAPTURE - Cancel
+// ============================================
+ipcMain.handle('selection-cancelled', () => {
+  selectionWindow?.close();
+  selectionWindow = null;
+  mainWindow?.show();
+});
+
+// ============================================
+// Crop screenshot using Electron's nativeImage
+// ============================================
+
+async function cropScreenshot(
+  dataUrl: string,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  scaleFactor: number
+): Promise<string> {
+  const image = nativeImage.createFromDataURL(dataUrl);
+  
+  // Apply scale factor for high-DPI displays
+  const cropped = image.crop({
+    x: Math.round(x * scaleFactor),
+    y: Math.round(y * scaleFactor),
+    width: Math.round(width * scaleFactor),
+    height: Math.round(height * scaleFactor)
+  });
+
+  return cropped.toDataURL();
+}
+
+// ============================================
+// SECTION CAPTURE - Handle selection complete
+// ============================================
+ipcMain.handle('selection-complete', async (event, region: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  screenshotDataUrl: string;
+  scaleFactor: number;
+}) => {
+  // Close selection window
+  selectionWindow?.close();
+  selectionWindow = null;
+
+  // Show main window again
+  mainWindow?.show();
+
+  console.log('djsdsj')
+
+  // Crop the image using the region coordinates
+  const croppedDataUrl = await cropScreenshot(
+    region.screenshotDataUrl,
+    region.x,
+    region.y,
+    region.width,
+    region.height,
+    region.scaleFactor
+  );
+
+
+  // Save the cropped screenshot
+  const { filePath } = await dialog.showSaveDialog({
+    defaultPath: `section-${Date.now()}.png`,
+    filters: [{ name: 'PNG Image', extensions: ['png'] }]
+  });
+
+  if (filePath) {
+    // const base64Data = croppedDataUrl.replace(/^data:image\/\w+;base64,/, '');
+    // fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+    // return filePath;
+    return await saveScreenshot(croppedDataUrl, filePath);
+  }
+
+  return null;
 });
