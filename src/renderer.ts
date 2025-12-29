@@ -11,12 +11,10 @@ const selectionbtn = document.getElementById('selection')
 // ============================================
 
 hide?.addEventListener('click', () => {
-    console.log('Hide clicked')
     window.menu.hide()
 })
 
 cancel?.addEventListener('click', () => {
-    console.log('Cancel clicked')
     window.menu.cancel()
 })
 
@@ -121,7 +119,7 @@ window.files.setFiles((sources: ScreenSource[]) => {
         saveBtn.addEventListener('click', (e) => {
             e.stopPropagation()
             const dataUrl = canvas.toDataURL('image/png')
-            window.screenAPI.saveScreenshot(source.name, source.thumbnail.toDataURL()).then((path) => {
+            window.screenAPI.saveScreenshot(source.name, dataUrl).then((path) => {
                 if (path) {
                     console.log('Screenshot saved to:', path)
                 }

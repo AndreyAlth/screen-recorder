@@ -35,7 +35,6 @@ app.on('ready', () => {
   // State management
   ipcMain.on('set-source-type', (_event, type: 'screen' | 'window' | 'region') => {
     sourceType = type;
-    console.log('Source type set to:', sourceType);
   });
 
   ipcMain.handle('get-source-type', () => {
@@ -81,7 +80,6 @@ ipcMain.handle('get-sources', async () => {
 
 // Capture a specific source (screen or window)
 ipcMain.handle('capture-source', async (event, sourceId: 'screen' | 'window') => {
-  console.log(sourceId)
   const sources = await desktopCapturer.getSources({
     types: [sourceId],
     thumbnailSize: { width: 3840, height: 2160 } // High resolution
@@ -118,9 +116,9 @@ ipcMain.handle('capture-source', async (event, sourceId: 'screen' | 'window') =>
 });
 
 // Save screenshot
-ipcMain.handle('save-screenshot', async (event, dataUrl: string, filePath?: string) => {
-  const filename = `${dataUrl.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
-  const savePath = '/home/andreyalth/Descargas/' + filename
+ipcMain.handle('save-screenshot', async (event, name: string, dataUrl: string) => {
+  const filename = `${name.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
+  const savePath = '/home/andreyalth/Descargas/' + filename;
   return await saveScreenshot(dataUrl, savePath);
 });
 
