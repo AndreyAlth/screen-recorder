@@ -121,10 +121,32 @@ window.files.setFiles((sources: ScreenSource[]) => {
             const dataUrl = canvas.toDataURL('image/png')
             window.screenAPI.saveScreenshot(source.name, dataUrl).then((path) => {
                 if (path) {
+                    // Play screenshot sound
+                    const audio = new Audio('./public/screenshot-sound.mp3')
+                    audio.play()
+
+                    // Screenshot flash effect
+                    const flash = document.createElement('div')
+                    flash.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-color: white;
+                        opacity: 0.8;
+                        border-radius: 8px;
+                        pointer-events: none;
+                        animation: flashFade 0.3s ease-out forwards;
+                    `
+                    sourceContainer.appendChild(flash)
+                    setTimeout(() => flash.remove(), 300)
+
                     saveBtn.textContent = 'saved'
                     saveBtn.style.backgroundColor = 'gray'
                     saveBtn.style.cursor = 'default'
                     saveBtn.disabled = true
+                    
                 }
             })
         })
