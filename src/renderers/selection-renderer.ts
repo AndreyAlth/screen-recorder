@@ -22,6 +22,7 @@ let startY = 0;
 window.selectionAPI.onSetScreenshot((data) => {
     screenshotDataUrl = data.dataUrl;
     scaleFactor = data.scaleFactor;
+    console.log(data);
 
     // screenshotBg.src = screenshotDataUrl;
     // highlightArea.src = screenshotDataUrl;

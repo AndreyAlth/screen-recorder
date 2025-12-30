@@ -133,6 +133,8 @@ async function captureSection() {
     thumbnailSize: { width: 3840, height: 2160 }
   });
 
+  console.log(sources, displays)
+
   if (sources.length === 0) {
     throw new Error('No screen source found');
   }
@@ -148,7 +150,11 @@ async function captureSection() {
     const scaleFactor = display.scaleFactor;
 
     // Find the matching source for this display
-    const matchingSource = sources.find(s => s.display_id === display.id.toString());
+    // Note: display_id from desktopCapturer doesn't match display.id on Linux
+    // Try matching by display_id first, then fall back to index-based matching
+    const displayIndex = displays.indexOf(display);
+    const matchingSource = sources.find(s => s.display_id === display.id.toString())
+      || sources[displayIndex];
     const screenshotDataUrl = matchingSource?.thumbnail.toDataURL() || '';
 
     const selectionWindow = new BrowserWindow({
@@ -178,8 +184,8 @@ async function captureSection() {
       selectionWindow.webContents.send('set-screenshot', {
         dataUrl: screenshotDataUrl,
         scaleFactor,
-        displayId: display.id,
-        bounds: { x, y, width, height }
+        // displayId: display.id,
+        // bounds: { x, y, width, height }
       });
     });
 
@@ -245,6 +251,8 @@ ipcMain.handle('selection-complete', async (event, region: {
 
   // Show main window again
   mainWindow?.show();
+
+  console.log(region)
 
   // Crop the image using the region coordinates
   const croppedDataUrl = await cropScreenshot(
