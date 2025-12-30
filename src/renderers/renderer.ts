@@ -24,7 +24,6 @@ cancel?.addEventListener('click', () => {
 
 capture?.addEventListener('click', () => {
     window.appState.getSourceType().then((sourceType) => {
-        console.log(sourceType)
         window.screenAPI.captureSource(sourceType)
     })
 })

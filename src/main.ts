@@ -5,7 +5,7 @@ import fs from 'fs'
 // Global state stored in main process
 let sourceType: SourceType = 'section';
 let mainWindow: BrowserWindow | null = null;
-let selectionWindow: BrowserWindow | null = null;
+let selectionWindows: BrowserWindow[] = [];
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -124,71 +124,85 @@ ipcMain.handle('get-screen-size', () => {
 // SECTION CAPTURE - Start the process
 // ============================================
 async function captureSection() {
-    // Step 1: Get the primary display info
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { width, height } = primaryDisplay.size;
-  console.log(screen)
-  const scaleFactor = primaryDisplay.scaleFactor;
+  // Step 1: Get all displays
+  const displays = screen.getAllDisplays();
 
-  // Step 2: Capture the full screen first
+  // Step 2: Capture all screens
   const sources = await desktopCapturer.getSources({
     types: ['screen'],
-    thumbnailSize: { 
-      width: width * scaleFactor, 
-      height: height * scaleFactor 
-    }
+    thumbnailSize: { width: 3840, height: 2160 }
   });
 
-  const screenSource = sources[0];
-  if (!screenSource) {
+  if (sources.length === 0) {
     throw new Error('No screen source found');
   }
-
-  const screenshotDataUrl = screenSource.thumbnail.toDataURL();
 
   // Step 3: Hide main window during selection
   mainWindow?.hide();
 
-  // Step 4: Create fullscreen selection window
-  selectionWindow = new BrowserWindow({
-    width,
-    height,
-    x: 0,
-    y: 0,
-    frame: false,
-    transparent: true,
-    fullscreen: true,
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    resizable: false,
-    webPreferences: {
-      preload: path.join(__dirname, '/preloads/preload-selection.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      devTools: true,
-    }
-  });
+  // Step 4: Create a selection window for each display
+  selectionWindows = [];
 
-  // Load selection HTML
-  selectionWindow.loadFile('./src/selection.html');
+  for (const display of displays) {
+    const { x, y, width, height } = display.bounds;
+    const scaleFactor = display.scaleFactor;
 
-  // Send screenshot to selection window once ready
-  selectionWindow.webContents.once('did-finish-load', () => {
-    selectionWindow?.webContents.send('set-screenshot', {
-      dataUrl: screenshotDataUrl,
-      scaleFactor
+    // Find the matching source for this display
+    const matchingSource = sources.find(s => s.display_id === display.id.toString());
+    const screenshotDataUrl = matchingSource?.thumbnail.toDataURL() || '';
+
+    const selectionWindow = new BrowserWindow({
+      width,
+      height,
+      x,
+      y,
+      frame: false,
+      transparent: true,
+      fullscreen: false,
+      alwaysOnTop: true,
+      skipTaskbar: true,
+      resizable: false,
+      webPreferences: {
+        preload: path.join(__dirname, '/preloads/preload-selection.js'),
+        contextIsolation: true,
+        nodeIntegration: false,
+        devTools: true,
+      }
     });
-  });
+
+    // Load selection HTML
+    selectionWindow.loadFile('./src/selection.html');
+
+    // Send screenshot data to this window once ready
+    selectionWindow.webContents.once('did-finish-load', () => {
+      selectionWindow.webContents.send('set-screenshot', {
+        dataUrl: screenshotDataUrl,
+        scaleFactor,
+        displayId: display.id,
+        bounds: { x, y, width, height }
+      });
+    });
+
+    selectionWindows.push(selectionWindow);
+  }
 }
 
 // ============================================
 // SECTION CAPTURE - Cancel
 // ============================================
 ipcMain.handle('selection-cancelled', () => {
-  selectionWindow?.close();
-  selectionWindow = null;
+  closeAllSelectionWindows();
   mainWindow?.show();
 });
+
+function closeAllSelectionWindows() {
+  for (const win of selectionWindows) {
+    if (!win.isDestroyed()) {
+      win.close();
+    }
+  }
+  selectionWindows = [];
+}
 
 // ============================================
 // Crop screenshot using Electron's nativeImage
@@ -226,14 +240,11 @@ ipcMain.handle('selection-complete', async (event, region: {
   screenshotDataUrl: string;
   scaleFactor: number;
 }) => {
-  // Close selection window
-  selectionWindow?.close();
-  selectionWindow = null;
+  // Close all selection windows
+  closeAllSelectionWindows();
 
   // Show main window again
   mainWindow?.show();
-
-  console.log('djsdsj')
 
   // Crop the image using the region coordinates
   const croppedDataUrl = await cropScreenshot(

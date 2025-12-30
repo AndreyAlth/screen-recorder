@@ -20,8 +20,6 @@ let startY = 0;
 // Receive screenshot from main process
 // ============================================
 window.selectionAPI.onSetScreenshot((data) => {
-  console.log({data})
-    console.log('Received screenshot data:', data.dataUrl ? 'has dataUrl' : 'NO dataUrl', 'scaleFactor:', data.scaleFactor);
     screenshotDataUrl = data.dataUrl;
     scaleFactor = data.scaleFactor;
 
