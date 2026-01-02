@@ -44,6 +44,7 @@ selectionbtn?.addEventListener('click', () => {
 
 //show images
 window.files.setFiles((sources: ScreenSource[]) => {
+    console.log(sources)
     const filesDiv = document.getElementById('files')
     if (!filesDiv) return
     

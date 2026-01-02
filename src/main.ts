@@ -133,8 +133,6 @@ async function captureSection() {
     thumbnailSize: { width: 3840, height: 2160 }
   });
 
-  console.log(sources, displays)
-
   if (sources.length === 0) {
     throw new Error('No screen source found');
   }
@@ -252,8 +250,6 @@ ipcMain.handle('selection-complete', async (event, region: {
   // Show main window again
   mainWindow?.show();
 
-  console.log(region)
-
   // Crop the image using the region coordinates
   const croppedDataUrl = await cropScreenshot(
     region.screenshotDataUrl,
@@ -266,17 +262,25 @@ ipcMain.handle('selection-complete', async (event, region: {
 
 
   // Save the cropped screenshot
-  const { filePath } = await dialog.showSaveDialog({
-    defaultPath: `section-${Date.now()}.png`,
-    filters: [{ name: 'PNG Image', extensions: ['png'] }]
-  });
+  // const { filePath } = await dialog.showSaveDialog({
+  //   defaultPath: `section-${Date.now()}.png`,
+  //   filters: [{ name: 'PNG Image', extensions: ['png'] }]
+  // });
 
-  if (filePath) {
-    // const base64Data = croppedDataUrl.replace(/^data:image\/\w+;base64,/, '');
-    // fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-    // return filePath;
-    return await saveScreenshot(croppedDataUrl, filePath);
-  }
+  // if (filePath) {
+  //   // const base64Data = croppedDataUrl.replace(/^data:image\/\w+;base64,/, '');
+  //   // fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+  //   // return filePath;
+  //   return await saveScreenshot(croppedDataUrl, filePath);
+  // }
 
-  return null;
+  // return null;
+
+  mainWindow?.webContents.send('set-files', [{
+    id: 'section',
+    name: 'Section',
+    thumbnail: croppedDataUrl,
+    appIcon: null,
+    displayId: 'section',
+  }]);
 });
