@@ -124,10 +124,14 @@ ipcMain.handle('get-screen-size', () => {
 // SECTION CAPTURE - Start the process
 // ============================================
 async function captureSection() {
-  // Step 1: Get all displays
+
+  // Step 1: Hide main window during selection
+  mainWindow?.hide();
+  
+  // Step 2: Get all displays
   const displays = screen.getAllDisplays();
 
-  // Step 2: Capture all screens
+  // Step 3: Capture all screens
   const sources = await desktopCapturer.getSources({
     types: ['screen'],
     thumbnailSize: { width: 3840, height: 2160 }
@@ -138,9 +142,8 @@ async function captureSection() {
   }
 
   sources.reverse();
+
   
-  // Step 3: Hide main window during selection
-  mainWindow?.hide();
 
   // Step 4: Create a selection window for each display
   selectionWindows = [];
@@ -223,7 +226,7 @@ async function cropScreenshot(
   scaleFactor: number
 ): Promise<string> {
   const image = nativeImage.createFromDataURL(dataUrl);
-  
+
   // Apply scale factor for high-DPI displays
   const cropped = image.crop({
     x: Math.round(x * scaleFactor),

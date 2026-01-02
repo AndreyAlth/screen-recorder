@@ -50,7 +50,18 @@ window.files.setFiles((sources: ScreenSource[]) => {
     
     // Clear previous content
     filesDiv.innerHTML = ''
-    
+
+    // Set up grid layout on container
+    filesDiv.style.cssText = `
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-start;
+    `
+
+    // Determine item width based on number of sources
+    const itemWidth = sources.length === 1 ? '40%' : 'calc(33.333% - 7px)'
+
     // Create a canvas for each source
     sources.forEach((source) => {
         // Create container for each source
@@ -58,8 +69,8 @@ window.files.setFiles((sources: ScreenSource[]) => {
         sourceContainer.className = 'source-item'
         sourceContainer.style.cssText = `
             position: relative;
-            display: inline-block;
-            margin: 10px;
+            width: ${itemWidth};
+            box-sizing: border-box;
             text-align: center;
             cursor: pointer;
             border: 2px solid transparent;
@@ -71,7 +82,7 @@ window.files.setFiles((sources: ScreenSource[]) => {
         // Create canvas
         const canvas = document.createElement('canvas')
         canvas.style.cssText = `
-            width: 200px;
+            width: 100%;
             height: auto;
             border-radius: 4px;
             display: block;
