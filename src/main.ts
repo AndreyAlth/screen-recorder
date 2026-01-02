@@ -137,6 +137,8 @@ async function captureSection() {
     throw new Error('No screen source found');
   }
 
+  sources.reverse();
+  
   // Step 3: Hide main window during selection
   mainWindow?.hide();
 
