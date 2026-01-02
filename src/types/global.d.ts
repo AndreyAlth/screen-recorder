@@ -20,6 +20,20 @@ interface SelectionAPI {
     cancelSelection: () => Promise<void>;
 }
 
+interface SavePath {
+    id: string;
+    namePath: string;
+    path: string;
+}
+
+interface PathsAPI {
+    getPaths: () => Promise<SavePath[]>;
+    getSelectedPathId: () => Promise<string>;
+    setSelectedPathId: (pathId: string) => void;
+    addPath: (newPath: SavePath) => Promise<SavePath[]>;
+    removePath: (pathId: string) => Promise<SavePath[]>;
+}
+
 declare global {
     interface Window {
         menu: {
@@ -40,6 +54,7 @@ declare global {
         files: {
             setFiles: (callback: (sources: ScreenSource[]) => void) => void
         },
-        selectionAPI: SelectionAPI
+        selectionAPI: SelectionAPI,
+        pathsAPI: PathsAPI
     }
 }

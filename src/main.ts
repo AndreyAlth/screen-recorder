@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, desktopCapturer, screen, nativeImage, dialog } from 'electron';
 import path from 'node:path';
 import fs from 'fs'
+import store, { SavePath } from './store/paths';
 
 // Global state stored in main process
 let sourceType: SourceType = 'section';
@@ -105,8 +106,41 @@ ipcMain.handle('capture-source', async (event, sourceId: SourceType) => {
 // Save screenshot
 ipcMain.handle('save-screenshot', async (event, name: string, dataUrl: string) => {
   const filename = `${name.replace(/[^a-z0-9]/gi, '_')}-${Date.now()}.png`;
-  const savePath = '/home/andreyalth/Descargas/' + filename;
+  const selectedPathId = store.get('selectedPathId');
+  const paths = store.get('paths');
+  const selectedPath = paths.find(p => p.id === selectedPathId) ?? paths[0];
+  const basePath = selectedPath?.path ?? '/home/andreyalth/Descargas/';
+  const savePath = basePath + filename;
   return await saveScreenshot(dataUrl, savePath);
+});
+
+// Path management
+ipcMain.handle('get-paths', () => {
+  return store.get('paths');
+});
+
+ipcMain.handle('get-selected-path-id', () => {
+  return store.get('selectedPathId');
+});
+
+ipcMain.on('set-selected-path-id', (_event, pathId: string) => {
+  store.set('selectedPathId', pathId);
+});
+
+ipcMain.handle('add-path', (_event, newPath: SavePath) => {
+  const paths = store.get('paths');
+  paths.push(newPath);
+  store.set('paths', paths);
+  return paths;
+});
+
+ipcMain.handle('remove-path', (_event, pathId: string) => {
+  const paths = store.get('paths').filter(p => p.id !== pathId);
+  store.set('paths', paths);
+  if (store.get('selectedPathId') === pathId && paths.length > 0 && paths[0]) {
+    store.set('selectedPathId', paths[0].id);
+  }
+  return paths;
 });
 
 

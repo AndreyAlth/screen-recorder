@@ -45,3 +45,16 @@ contextBridge.exposeInMainWorld('files', {
         })
     }
 })
+
+contextBridge.exposeInMainWorld('pathsAPI', {
+    getPaths: (): Promise<{ id: string; namePath: string; path: string }[]> =>
+        ipcRenderer.invoke('get-paths'),
+    getSelectedPathId: (): Promise<string> =>
+        ipcRenderer.invoke('get-selected-path-id'),
+    setSelectedPathId: (pathId: string) =>
+        ipcRenderer.send('set-selected-path-id', pathId),
+    addPath: (newPath: { id: string; namePath: string; path: string }): Promise<{ id: string; namePath: string; path: string }[]> =>
+        ipcRenderer.invoke('add-path', newPath),
+    removePath: (pathId: string): Promise<{ id: string; namePath: string; path: string }[]> =>
+        ipcRenderer.invoke('remove-path', pathId),
+})

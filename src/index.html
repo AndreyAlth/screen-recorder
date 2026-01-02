@@ -51,6 +51,65 @@
             background-color: #4caf50;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .path-select {
+            background-color: #0c6d1a;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            -webkit-app-region: no-drag;
+            transition: background-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
+        .path-select:hover {
+            background-color: #4caf50;
+        }
+
+        .path-select:focus {
+            outline: none;
+            background-color: #4caf50;
+        }
+
+        .path-select option {
+            background-color: #2d2d2d;
+            color: white;
+            padding: 8px;
+        }
+
+        .path-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-app-region: no-drag;
+        }
+
+        .path-label {
+            font-size: 11px;
+            color: #4caf50;
+            margin-top: 4px;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
         .window-controls {
             display: flex;
             gap: 8px;
@@ -299,7 +358,15 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <button class="capture-btn" id="captureBtn">Capturar</button>
+        <div class="header-left">
+            <button class="capture-btn" id="captureBtn">Capturar</button>
+            <div class="path-container">
+                <select class="path-select" name="pathSelect" id="pathSelect">
+                    <option value="default">Default</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+        </div> 
         <div class="window-controls">
             <button class="window-btn" id="menuBtn">☰</button>
             <button class="window-btn" id="minimizeBtn">−</button>
@@ -408,6 +475,55 @@
                 window.electronAPI.minimizeWindow();
             }
         });
+
+        // Path select functionality
+        const pathSelect = document.getElementById('pathSelect');
+        const pathLabel = document.getElementById('pathLabel');
+        let currentPaths = [];
+
+        function updatePathLabel(pathId) {
+            const selected = currentPaths.find(p => p.id === pathId);
+            if (selected && pathLabel) {
+                pathLabel.textContent = `${selected.namePath}: ${selected.path}`;
+                pathLabel.title = selected.path; // tooltip for full path
+            }
+        }
+
+        async function populatePathSelect() {
+            if (!window.pathsAPI) {
+                console.log('pathsAPI not available yet');
+                return;
+            }
+
+            try {
+                currentPaths = await window.pathsAPI.getPaths();
+                const selectedPathId = await window.pathsAPI.getSelectedPathId();
+
+                pathSelect.innerHTML = '';
+
+                currentPaths.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.id;
+                    option.textContent = `${p.namePath} - ${p.path}`;
+                    option.selected = p.id === selectedPathId;
+                    pathSelect.appendChild(option);
+                });
+
+                updatePathLabel(selectedPathId);
+            } catch (err) {
+                console.error('Error loading paths:', err);
+            }
+        }
+
+        pathSelect.addEventListener('change', (e) => {
+            if (window.pathsAPI) {
+                window.pathsAPI.setSelectedPathId(e.target.value);
+                updatePathLabel(e.target.value);
+            }
+        });
+
+        // Initialize path select on load
+        populatePathSelect();
     </script>
 </body>
 </html>

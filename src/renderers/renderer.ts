@@ -193,3 +193,15 @@ window.files.setFiles((sources: ScreenSource[]) => {
     })
 })
 
+window.pathsAPI.getPaths().then((paths) => {
+    const pathSelect = document.getElementById('pathSelect')
+    if (!pathSelect) return
+    pathSelect.innerHTML = ''
+    paths.forEach((path) => {
+        const option = document.createElement('option')
+        option.value = path.id
+        option.textContent = path.namePath
+        pathSelect.appendChild(option)
+    })
+})  
+
