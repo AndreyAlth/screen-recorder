@@ -2,9 +2,6 @@
 const screenshotBg = document.getElementById(
   "screenshot-bg"
 ) as HTMLImageElement;
-const highlightArea = document.getElementById(
-  "highlight-area"
-) as HTMLImageElement;
 const selectionBox = document.getElementById("selection-box") as HTMLDivElement;
 const dimensions = document.getElementById("dimensions") as HTMLDivElement;
 const instructions = document.getElementById("instructions") as HTMLDivElement;
@@ -24,7 +21,6 @@ window.selectionAPI.onSetScreenshot((data) => {
     scaleFactor = data.scaleFactor;
 
     // screenshotBg.src = screenshotDataUrl;
-    // highlightArea.src = screenshotDataUrl;
 });
 
 // ============================================
@@ -40,8 +36,6 @@ document.addEventListener("mousedown", (e) => {
   selectionBox.style.width = "0px";
   selectionBox.style.height = "0px";
   selectionBox.style.display = "block";
-
-  highlightArea.style.display = "block";
   dimensions.style.display = "block";
   instructions.style.display = "none";
 });
@@ -63,15 +57,6 @@ document.addEventListener("mousemove", (e) => {
   selectionBox.style.top = `${top}px`;
   selectionBox.style.width = `${width}px`;
   selectionBox.style.height = `${height}px`;
-
-  // Update highlight area (shows original brightness in selection)
-  highlightArea.style.left = `${left}px`;
-  highlightArea.style.top = `${top}px`;
-  highlightArea.style.width = `${width}px`;
-  highlightArea.style.height = `${height}px`;
-  highlightArea.style.clipPath = `inset(${top}px calc(100% - ${
-    left + width
-  }px) calc(100% - ${top + height}px) ${left}px)`;
 
   // Update dimensions display
   dimensions.textContent = `${width} × ${height}`;
@@ -122,7 +107,6 @@ document.addEventListener("keydown", async (e) => {
 // ============================================
 function resetSelection() {
   selectionBox.style.display = 'none';
-  highlightArea.style.display = 'none';
   dimensions.style.display = 'none';
   instructions.style.display = 'block';
 }
