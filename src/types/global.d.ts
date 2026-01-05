@@ -32,6 +32,7 @@ interface PathsAPI {
     setSelectedPathId: (pathId: string) => void;
     addPath: (newPath: SavePath) => Promise<SavePath[]>;
     removePath: (pathId: string) => Promise<SavePath[]>;
+    selectFolder: () => Promise<string | null>;
 }
 
 declare global {

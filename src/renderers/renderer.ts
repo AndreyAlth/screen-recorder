@@ -199,8 +199,8 @@ window.pathsAPI.getPaths().then((paths) => {
     pathSelect.innerHTML = ''
     paths.forEach((path) => {
         const option = document.createElement('option')
-        option.value = path.id
-        option.textContent = path.namePath
+        // option.value = path.id
+        // option.textContent = path.namePath
         pathSelect.appendChild(option)
     })
 })  

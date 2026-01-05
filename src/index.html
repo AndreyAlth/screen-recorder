@@ -353,6 +353,224 @@
     opacity: 0;
   }
 }
+
+/* Folders Section */
+.folders-section {
+    display: none;
+}
+
+.folders-section.active {
+    display: block;
+}
+
+.capture-section {
+    display: block;
+}
+
+.capture-section.hidden {
+    display: none;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.new-path-btn {
+    background-color: #0c6d1a;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.new-path-btn:hover {
+    background-color: #4caf50;
+}
+
+.paths-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #3a3a3a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.paths-table th,
+.paths-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #4a4a4a;
+}
+
+.paths-table th {
+    background-color: #2a2a2a;
+    font-size: 12px;
+    color: #b0b0b0;
+    font-weight: 500;
+}
+
+.paths-table td {
+    font-size: 13px;
+}
+
+.paths-table tr:last-child td {
+    border-bottom: none;
+}
+
+.paths-table tr:hover {
+    background-color: #444444;
+}
+
+.delete-btn {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #f44336;
+}
+
+.delete-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+/* New Path Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background-color: #2d2d2d;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+}
+
+.modal-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #3a3a3a;
+    color: white;
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.modal-input:focus {
+    outline: 2px solid #4caf50;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-btn.cancel {
+    background-color: #4a4a4a;
+    color: white;
+}
+
+.modal-btn.cancel:hover {
+    background-color: #5a5a5a;
+}
+
+.modal-btn.save {
+    background-color: #0c6d1a;
+    color: white;
+}
+
+.modal-btn.save:hover {
+    background-color: #4caf50;
+}
+
+.path-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.path-selector .path-input {
+    flex: 1;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.browse-btn {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: #4a4a4a;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.browse-btn:hover {
+    background-color: #5a5a5a;
+}
+
+.back-btn {
+    margin-top: 16px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #4a4a4a;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+    background-color: #5a5a5a;
+}
     </style>
 </head>
 <body>
@@ -362,13 +580,11 @@
             <button class="capture-btn" id="captureBtn">Capturar</button>
             <div class="path-container">
                 <select class="path-select" name="pathSelect" id="pathSelect">
-                    <option value="default">Default</option>
-                    <option value="custom">Custom</option>
                 </select>
             </div>
         </div> 
         <div class="window-controls">
-            <button class="window-btn" id="menuBtn">☰</button>
+            <button class="window-btn" id="menuBtn">📁</button>
             <button class="window-btn" id="minimizeBtn">−</button>
             <button class="window-btn" id="closeBtn">×</button>
         </div>
@@ -376,31 +592,55 @@
 
     <!-- Main Content -->
     <div class="content">
-        <div class="section-title">Área de captura</div>
+        <!-- Capture Section -->
+        <div class="capture-section" id="captureSection">
+            <div class="section-title">Área de captura</div>
 
-        <!-- Capture Options -->
-        <div class="capture-options">
-            <button class="capture-option active" data-mode="selection" id="selection">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/>
-                    <rect x="8" y="8" width="8" height="8" fill="currentColor" opacity="0.3"/>
-                </svg>
-                <span>Selección</span>
-            </button>
-            <button class="capture-option" data-mode="screen" id="screen">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
-                    <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2"/>
-                    <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2"/>
-                </svg>
-                <span>Pantalla</span>
-            </button>
-            <button class="capture-option" data-mode="window" id="window">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                </svg>
-                <span>Ventana</span>
-            </button>
+            <!-- Capture Options -->
+            <div class="capture-options">
+                <button class="capture-option active" data-mode="selection" id="selection">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/>
+                        <rect x="8" y="8" width="8" height="8" fill="currentColor" opacity="0.3"/>
+                    </svg>
+                    <span>Selección</span>
+                </button>
+                <button class="capture-option" data-mode="screen" id="screen">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2"/>
+                        <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>Pantalla</span>
+                </button>
+                <button class="capture-option" data-mode="window" id="window">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    </svg>
+                    <span>Ventana</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Folders Section -->
+        <div class="folders-section" id="foldersSection">
+            <div class="section-header">
+                <div class="section-title">Folders</div>
+                <button class="new-path-btn" id="newPathBtn">+ New Path</button>
+            </div>
+            <table class="paths-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Path</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="pathsTableBody">
+                    <!-- Paths will be populated by JavaScript -->
+                </tbody>
+            </table>
+            <button class="back-btn" id="backToCapture">← Back</button>
         </div>
 
         <!-- Settings -->
@@ -427,6 +667,22 @@
 
     </div>
 
+    <!-- New Path Modal -->
+    <div class="modal-overlay" id="newPathModal">
+        <div class="modal">
+            <div class="modal-title">New Path</div>
+            <input type="text" class="modal-input" id="newPathName" placeholder="Name (e.g., Desktop)">
+            <div class="path-selector">
+                <input type="text" class="modal-input path-input" id="newPathPath" placeholder="Select a folder..." readonly>
+                <button class="browse-btn" id="browsePathBtn">Browse</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" id="cancelNewPath">Cancel</button>
+                <button class="modal-btn save" id="saveNewPath">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../renderers/renderer.js"></script>
     <script src="../renderers/screen-renderer.js"></script>
     <script>
@@ -439,29 +695,35 @@
             });
         });
 
-        // Toggle switch
+        // Toggle switch (commented out in HTML)
         const toggle = document.getElementById('showPointerToggle');
-        toggle.addEventListener('click', () => {
-            toggle.classList.toggle('active');
-        });
+        if (toggle) {
+            toggle.addEventListener('click', () => {
+                toggle.classList.toggle('active');
+            });
+        }
 
-        // Delay counter
+        // Delay counter (commented out in HTML)
         const delayValue = document.getElementById('delayValue');
         const decreaseBtn = document.getElementById('decreaseDelay');
         const increaseBtn = document.getElementById('increaseDelay');
         let delay = 0;
 
-        decreaseBtn.addEventListener('click', () => {
-            if (delay > 0) {
-                delay--;
-                delayValue.textContent = delay;
-            }
-        });
+        if (decreaseBtn) {
+            decreaseBtn.addEventListener('click', () => {
+                if (delay > 0) {
+                    delay--;
+                    if (delayValue) delayValue.textContent = delay;
+                }
+            });
+        }
 
-        increaseBtn.addEventListener('click', () => {
-            delay++;
-            delayValue.textContent = delay;
-        });
+        if (increaseBtn) {
+            increaseBtn.addEventListener('click', () => {
+                delay++;
+                if (delayValue) delayValue.textContent = delay;
+            });
+        }
 
         // Window controls (for Electron)
         document.getElementById('closeBtn').addEventListener('click', () => {
@@ -504,7 +766,7 @@
                 currentPaths.forEach(p => {
                     const option = document.createElement('option');
                     option.value = p.id;
-                    option.textContent = `${p.namePath} - ${p.path}`;
+                    option.textContent = `${p.namePath}`;
                     option.selected = p.id === selectedPathId;
                     pathSelect.appendChild(option);
                 });
@@ -524,6 +786,149 @@
 
         // Initialize path select on load
         populatePathSelect();
+
+        // ============================================
+        // Menu button - Toggle between sections
+        // ============================================
+        const menuBtn = document.getElementById('menuBtn');
+        const captureSection = document.getElementById('captureSection');
+        const foldersSection = document.getElementById('foldersSection');
+        const filesDiv = document.getElementById('files');
+        let showingFolders = false;
+
+        menuBtn.addEventListener('click', () => {
+            showingFolders = !showingFolders;
+
+            if (showingFolders) {
+                captureSection.classList.add('hidden');
+                filesDiv.style.display = 'none';
+                foldersSection.classList.add('active');
+                populatePathsTable();
+            } else {
+                captureSection.classList.remove('hidden');
+                filesDiv.style.display = 'block';
+                foldersSection.classList.remove('active');
+            }
+        });
+
+        // Back button - return to capture area
+        const backToCapture = document.getElementById('backToCapture');
+        backToCapture.addEventListener('click', () => {
+            showingFolders = false;
+            captureSection.classList.remove('hidden');
+            filesDiv.style.display = 'block';
+            foldersSection.classList.remove('active');
+        });
+
+        // ============================================
+        // Folders Table
+        // ============================================
+        const pathsTableBody = document.getElementById('pathsTableBody');
+
+        async function populatePathsTable() {
+            if (!window.pathsAPI) return;
+
+            try {
+                const paths = await window.pathsAPI.getPaths();
+                pathsTableBody.innerHTML = '';
+
+                paths.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${p.namePath}</td>
+                        <td>${p.path}</td>
+                        <td>
+                            <button class="delete-btn" data-id="${p.id}" ${p.id === 'default' ? 'disabled' : ''}>
+                                Delete
+                            </button>
+                        </td>
+                    `;
+                    pathsTableBody.appendChild(tr);
+                });
+
+                // Add delete event listeners
+                pathsTableBody.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const pathId = e.target.dataset.id;
+                        if (pathId && pathId !== 'default') {
+                            await window.pathsAPI.removePath(pathId);
+                            populatePathsTable();
+                            populatePathSelect();
+                        }
+                    });
+                });
+            } catch (err) {
+                console.error('Error loading paths table:', err);
+            }
+        }
+
+        // ============================================
+        // New Path Modal
+        // ============================================
+        const newPathModal = document.getElementById('newPathModal');
+        const newPathBtn = document.getElementById('newPathBtn');
+        const cancelNewPath = document.getElementById('cancelNewPath');
+        const saveNewPath = document.getElementById('saveNewPath');
+        const newPathName = document.getElementById('newPathName');
+        const newPathPath = document.getElementById('newPathPath');
+        const browsePathBtn = document.getElementById('browsePathBtn');
+
+        // Browse button - open folder dialog
+        browsePathBtn.addEventListener('click', async () => {
+            const selectedPath = await window.pathsAPI.selectFolder();
+            if (selectedPath) {
+                newPathPath.value = selectedPath;
+            }
+        });
+
+        // Also allow clicking on the input to browse
+        newPathPath.addEventListener('click', async () => {
+            const selectedPath = await window.pathsAPI.selectFolder();
+            if (selectedPath) {
+                newPathPath.value = selectedPath;
+            }
+        });
+
+        newPathBtn.addEventListener('click', () => {
+            newPathModal.classList.add('active');
+            newPathName.value = '';
+            newPathPath.value = '';
+            newPathName.focus();
+        });
+
+        cancelNewPath.addEventListener('click', () => {
+            newPathModal.classList.remove('active');
+        });
+
+        newPathModal.addEventListener('click', (e) => {
+            if (e.target === newPathModal) {
+                newPathModal.classList.remove('active');
+            }
+        });
+
+        saveNewPath.addEventListener('click', async () => {
+            const name = newPathName.value.trim();
+            const path = newPathPath.value.trim();
+
+            if (!name || !path) {
+                alert('Please fill in both fields');
+                return;
+            }
+
+            // Ensure path ends with /
+            const finalPath = path.endsWith('/') ? path : path + '/';
+
+            const newPath = {
+                id: `path-${Date.now()}`,
+                namePath: name,
+                path: finalPath
+            };
+
+            await window.pathsAPI.addPath(newPath);
+            newPathModal.classList.remove('active');
+            populatePathsTable();
+            populatePathSelect();
+        });
     </script>
 </body>
 </html>

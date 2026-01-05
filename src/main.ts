@@ -143,6 +143,20 @@ ipcMain.handle('remove-path', (_event, pathId: string) => {
   return paths;
 });
 
+// Open folder dialog
+ipcMain.handle('select-folder', async () => {
+  if (!mainWindow) return null;
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'],
+    title: 'Select Save Folder'
+  });
+  if (result.canceled || result.filePaths.length === 0) {
+    return null;
+  }
+  return result.filePaths[0];
+});
+
 
 // Get screen dimensions (for region capture)
 ipcMain.handle('get-screen-size', () => {

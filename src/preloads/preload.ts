@@ -57,4 +57,6 @@ contextBridge.exposeInMainWorld('pathsAPI', {
         ipcRenderer.invoke('add-path', newPath),
     removePath: (pathId: string): Promise<{ id: string; namePath: string; path: string }[]> =>
         ipcRenderer.invoke('remove-path', pathId),
+    selectFolder: (): Promise<string | null> =>
+        ipcRenderer.invoke('select-folder'),
 })
