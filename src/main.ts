@@ -179,34 +179,41 @@ async function captureSection() {
   // Step 2: Get all displays
   const displays = screen.getAllDisplays();
 
-  // Step 3: Capture all screens
-  const sources = await desktopCapturer.getSources({
-    types: ['screen'],
-    thumbnailSize: { width: 3840, height: 2160 }
-  });
+  displays.reverse()
 
-  if (sources.length === 0) {
-    throw new Error('No screen source found');
-  }
-
-  sources.reverse();
-
-  
-
-  // Step 4: Create a selection window for each display
+  // Step 3: Create a selection window for each display
   selectionWindows = [];
 
   for (const display of displays) {
     const { x, y, width, height } = display.bounds;
     const scaleFactor = display.scaleFactor;
 
+    // Capture screenshot at this display's native physical resolution
+    const physicalWidth = width * scaleFactor;
+    const physicalHeight = height * scaleFactor;
+
+    const sources = await desktopCapturer.getSources({
+      types: ['screen'],
+      thumbnailSize: { width: physicalWidth, height: physicalHeight }
+    });
+
+    if (sources.length === 0) {
+      console.error('No screen source found');
+      continue;
+    }
+
     // Find the matching source for this display
-    // Note: display_id from desktopCapturer doesn't match display.id on Linux
-    // Try matching by display_id first, then fall back to index-based matching
     const displayIndex = displays.indexOf(display);
     const matchingSource = sources.find(s => s.display_id === display.id.toString())
       || sources[displayIndex];
-    const screenshotDataUrl = matchingSource?.thumbnail.toDataURL() || '';
+
+    if (!matchingSource) {
+      console.error('No matching source for display:', display.id);
+      continue;
+    }
+
+    const screenshotDataUrl = matchingSource.thumbnail.toDataURL();
+    const imageSize = matchingSource.thumbnail.getSize();
 
     const selectionWindow = new BrowserWindow({
       width,
@@ -231,12 +238,15 @@ async function captureSection() {
     selectionWindow.loadFile('./src/selection.html');
 
     // Send screenshot data to this window once ready
+    // Include display bounds so we can calculate offset if window position differs
     selectionWindow.webContents.once('did-finish-load', () => {
+      const actualWindowBounds = selectionWindow.getBounds();
       selectionWindow.webContents.send('set-screenshot', {
         dataUrl: screenshotDataUrl,
         scaleFactor,
-        // displayId: display.id,
-        // bounds: { x, y, width, height }
+        displayBounds: { x, y, width, height },
+        windowBounds: actualWindowBounds,
+        imageSize
       });
     });
 
@@ -271,16 +281,20 @@ async function cropScreenshot(
   y: number,
   width: number,
   height: number,
-  scaleFactor: number
+  scaleX: number,
+  scaleY?: number
 ): Promise<string> {
   const image = nativeImage.createFromDataURL(dataUrl);
 
-  // Apply scale factor for high-DPI displays
+  // Use scaleY if provided, otherwise use scaleX for both
+  const actualScaleY = scaleY ?? scaleX;
+
+  // Apply scale factors to convert CSS pixels to image pixels
   const cropped = image.crop({
-    x: Math.round(x * scaleFactor),
-    y: Math.round(y * scaleFactor),
-    width: Math.round(width * scaleFactor),
-    height: Math.round(height * scaleFactor)
+    x: Math.round(x * scaleX),
+    y: Math.round(y * actualScaleY),
+    width: Math.round(width * scaleX),
+    height: Math.round(height * actualScaleY)
   });
 
   return cropped.toDataURL();
@@ -296,21 +310,38 @@ ipcMain.handle('selection-complete', async (event, region: {
   height: number;
   screenshotDataUrl: string;
   scaleFactor: number;
+  windowYOffset: number;
 }) => {
+  // Get the window bounds BEFORE closing (window might be destroyed after close)
+  const senderWindow = BrowserWindow.fromWebContents(event.sender);
+  const windowBounds = senderWindow?.getBounds() || { width: 0, height: 0 };
+
   // Close all selection windows
   closeAllSelectionWindows();
 
   // Show main window again
   mainWindow?.show();
 
-  // Crop the image using the region coordinates
+  // Get actual image size to calculate the correct scale
+  const image = nativeImage.createFromDataURL(region.screenshotDataUrl);
+  const imageSize = image.getSize();
+
+  // Calculate the actual scale between the image and the window
+  const actualScaleX = imageSize.width / windowBounds.width;
+  const actualScaleY = imageSize.height / windowBounds.height;
+
+  // Adjust Y position by the window offset (accounts for system panels/taskbars)
+  const adjustedY = region.y + region.windowYOffset;
+
+  // Crop the image using the actual scale ratio
   const croppedDataUrl = await cropScreenshot(
     region.screenshotDataUrl,
     region.x,
-    region.y,
+    adjustedY,
     region.width,
     region.height,
-    region.scaleFactor
+    actualScaleX,
+    actualScaleY
   );
 
 

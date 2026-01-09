@@ -8,7 +8,13 @@ interface ScreenAPI {
 }
 
 interface SelectionAPI {
-    onSetScreenshot: (callback: (data: { dataUrl: string; scaleFactor: number }) => void) => void;
+    onSetScreenshot: (callback: (data: {
+      dataUrl: string;
+      scaleFactor: number;
+      displayBounds: { x: number; y: number; width: number; height: number };
+      windowBounds: { x: number; y: number; width: number; height: number };
+      imageSize: { width: number; height: number };
+    }) => void) => void;
     completeSelection: (region: {
       x: number;
       y: number;
@@ -16,6 +22,7 @@ interface SelectionAPI {
       height: number;
       screenshotDataUrl: string;
       scaleFactor: number;
+      windowYOffset: number;
     }) => Promise<string | null>;
     cancelSelection: () => Promise<void>;
 }

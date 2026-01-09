@@ -9,6 +9,7 @@ const instructions = document.getElementById("instructions") as HTMLDivElement;
 // State
 let screenshotDataUrl: string = "";
 let scaleFactor: number = 1;
+let windowYOffset: number = 0;
 let isSelecting = false;
 let startX = 0;
 let startY = 0;
@@ -19,8 +20,7 @@ let startY = 0;
 window.selectionAPI.onSetScreenshot((data) => {
     screenshotDataUrl = data.dataUrl;
     scaleFactor = data.scaleFactor;
-
-    // screenshotBg.src = screenshotDataUrl;
+    windowYOffset = data.windowBounds.y - data.displayBounds.y;
 });
 
 // ============================================
@@ -83,13 +83,15 @@ document.addEventListener("mouseup", async (e) => {
   }
 
   // Send selection to main process
+  // Include the window Y offset so main can adjust the crop position
   await window.selectionAPI.completeSelection({
     x: left,
     y: top,
     width,
     height,
     screenshotDataUrl,
-    scaleFactor
+    scaleFactor,
+    windowYOffset
   });
 });
 
