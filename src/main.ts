@@ -18,7 +18,7 @@ function createWindow() {
       contextIsolation: true,
       devTools: true
     },
-    frame: true,
+    frame: false,
   });
 
   mainWindow.loadFile('./src/index.html');
