@@ -18,10 +18,11 @@ function createWindow() {
       contextIsolation: true,
       devTools: true
     },
-    frame: false,
+    frame: false
+
   });
 
-  mainWindow.loadFile('./src/index.html');
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
   ipcMain.on('hide', () => {
     mainWindow?.minimize();
@@ -235,7 +236,7 @@ async function captureSection() {
     });
 
     // Load selection HTML
-    selectionWindow.loadFile('./src/selection.html');
+    selectionWindow.loadFile(path.join(__dirname, 'selection.html'));
 
     // Send screenshot data to this window once ready
     // Include display bounds so we can calculate offset if window position differs
