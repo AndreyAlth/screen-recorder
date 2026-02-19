@@ -94,7 +94,7 @@ window.files.setFiles((sources: ScreenSource[]) => {
         label.style.cssText = `
             margin-top: 8px;
             font-size: 12px;
-            color: #b0b0b0;
+            color: #b7bac4;
         `
         
         // Create save button
@@ -104,11 +104,11 @@ window.files.setFiles((sources: ScreenSource[]) => {
             position: absolute;
             bottom: 35px;
             right: 12px;
-            background-color: #0c6d1a;
+            background-color: #4f46e5;
             color: white;
             border: none;
             padding: 4px 8px;
-            border-radius: 4px;
+            border-radius: 0.5rem;
             font-size: 11px;
             cursor: pointer;
             opacity: 0;
@@ -155,7 +155,7 @@ window.files.setFiles((sources: ScreenSource[]) => {
                     setTimeout(() => flash.remove(), 300)
 
                     saveBtn.textContent = 'saved'
-                    saveBtn.style.backgroundColor = 'gray'
+                    saveBtn.style.backgroundColor = '#4c4f57'
                     saveBtn.style.cursor = 'default'
                     saveBtn.disabled = true
                     
@@ -166,18 +166,18 @@ window.files.setFiles((sources: ScreenSource[]) => {
         // Hover effect for save button
         saveBtn.addEventListener('mouseenter', () => {
             if (!saveBtn.disabled) {
-                saveBtn.style.backgroundColor = '#4caf50'
+                saveBtn.style.backgroundColor = '#6366f1'
             }
         })
         saveBtn.addEventListener('mouseleave', () => {
             if (!saveBtn.disabled) {
-                saveBtn.style.backgroundColor = '#0c6d1a'
+                saveBtn.style.backgroundColor = '#4f46e5'
             }
         })
         
         // Add hover effect
         sourceContainer.addEventListener('mouseenter', () => {
-            sourceContainer.style.borderColor = '#4caf50'
+            sourceContainer.style.borderColor = '#6366f1'
             saveBtn.style.opacity = '1'
         })
         sourceContainer.addEventListener('mouseleave', () => {

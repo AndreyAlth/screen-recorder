@@ -15,9 +15,13 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: #2d2d2d;
-            color: #ffffff;
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            background-color: #2a2c32;
+            color: #e6e7eb;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
             user-select: none;
             border-radius: 12px;
             overflow: hidden;
@@ -29,26 +33,28 @@
             align-items: center;
             justify-content: space-between;
             padding: 12px 16px;
-            background-color: #222222;
+            background-color: #232429;
             -webkit-app-region: drag;
             border-radius: 12px 12px 0px 0px;
+            box-shadow: 0 3px 10px 0 rgb(25 25 25 / 30%);
         }
 
         .capture-btn {
-            background-color: #0c6d1a;
+            background-color: #4f46e5;
             color: white;
             border: none;
             padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
             font-weight: 500;
+            letter-spacing: 0.025em;
             cursor: pointer;
             -webkit-app-region: no-drag;
             transition: background-color 0.2s;
         }
 
         .capture-btn:hover {
-            background-color: #4caf50;
+            background-color: #6366f1;
         }
 
         .header-left {
@@ -58,13 +64,14 @@
         }
 
         .path-select {
-            background-color: #0c6d1a;
+            background-color: #4f46e5;
             color: white;
             border: none;
             padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
             font-weight: 500;
+            letter-spacing: 0.025em;
             cursor: pointer;
             -webkit-app-region: no-drag;
             transition: background-color 0.2s;
@@ -78,16 +85,16 @@
         }
 
         .path-select:hover {
-            background-color: #4caf50;
+            background-color: #6366f1;
         }
 
         .path-select:focus {
             outline: none;
-            background-color: #4caf50;
+            background-color: #6366f1;
         }
 
         .path-select option {
-            background-color: #2d2d2d;
+            background-color: #2a2c32;
             color: white;
             padding: 8px;
         }
@@ -101,7 +108,7 @@
 
         .path-label {
             font-size: 11px;
-            color: #4caf50;
+            color: #818cf8;
             margin-top: 4px;
             max-width: 250px;
             overflow: hidden;
@@ -120,10 +127,9 @@
             width: 36px;
             height: 36px;
             border: none;
-            border-radius: 6px;
-            /* background-color: #4a4a4a; */
-            background-color: #373737;
-            color: #ffffff;
+            border-radius: 0.5rem;
+            background-color: #383a41;
+            color: #e6e7eb;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -133,7 +139,7 @@
         }
 
         .window-btn:hover {
-            background-color: #5a5a5a;
+            background-color: #4c4f57;
         }
 
         /* Main Content */
@@ -153,8 +159,8 @@
         }
 
         .section-title {
-            font-size: 14px;
-            color: #b0b0b0;
+            font-size: 0.875rem;
+            color: #b7bac4;
             margin-bottom: 12px;
         }
 
@@ -170,9 +176,9 @@
         .capture-option {
             flex: 1;
             padding: 16px 12px;
-            background-color: #4a4a4a;
+            background-color: #4c4f57;
             border: none;
-            color: #ffffff;
+            color: #e6e7eb;
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -182,11 +188,11 @@
         }
 
         .capture-option:hover {
-            background-color: #5a5a5a;
+            background-color: #383a41;
         }
 
         .capture-option.active {
-            background-color: #1a1a1a;
+            background-color: #1c1d21;
         }
 
         .capture-option svg {
@@ -200,8 +206,8 @@
 
         /* Settings Panel */
         .settings-panel {
-            background-color: #3a3a3a;
-            border-radius: 8px;
+            background-color: #383a41;
+            border-radius: 0.5rem;
             overflow: hidden;
         }
 
@@ -210,7 +216,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px;
-            border-bottom: 1px solid #4a4a4a;
+            border-bottom: 1px solid #4c4f57;
         }
 
         .setting-row:last-child {
@@ -224,31 +230,31 @@
         /* Toggle Switch */
         .toggle {
             position: relative;
-            width: 50px;
-            height: 28px;
-            background-color: #666;
-            border-radius: 14px;
+            width: 2.5rem;
+            height: 1.25rem;
+            background-color: #4c4f57;
+            border-radius: 9999px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s ease-in-out;
         }
 
         .toggle.active {
-            background-color: #4caf50;
+            background-color: #4f46e5;
         }
 
         .toggle-knob {
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 24px;
-            height: 24px;
+            width: calc(50% - 4px);
+            height: calc(100% - 4px);
             background-color: #ffffff;
-            border-radius: 50%;
-            transition: transform 0.2s;
+            border-radius: 9999px;
+            transition: transform 0.2s ease-in-out;
         }
 
         .toggle.active .toggle-knob {
-            transform: translateX(22px);
+            transform: translateX(calc(2.5rem - 100% - 4px));
         }
 
         /* Counter */
@@ -256,8 +262,8 @@
             display: flex;
             align-items: center;
             gap: 0;
-            background-color: #4a4a4a;
-            border-radius: 6px;
+            background-color: #4c4f57;
+            border-radius: 0.5rem;
             overflow: hidden;
         }
 
@@ -266,23 +272,23 @@
             text-align: center;
             font-size: 16px;
             padding: 8px 0;
-            background-color: #3a3a3a;
+            background-color: #383a41;
         }
 
         .counter-btn {
             width: 36px;
             height: 36px;
             border: none;
-            background-color: #4a4a4a;
-            color: #888;
+            background-color: #4c4f57;
+            color: #838794;
             cursor: pointer;
             font-size: 18px;
             transition: background-color 0.2s, color 0.2s;
         }
 
         .counter-btn:hover {
-            background-color: #5a5a5a;
-            color: #fff;
+            background-color: #383a41;
+            color: #e6e7eb;
         }
     </style>
     <style>
@@ -306,8 +312,8 @@
 #region-selector .selection-box {
   display: none;
   position: absolute;
-  border: 2px dashed #00ff00;
-  background: rgba(0, 255, 0, 0.1);
+  border: 2px dashed #818cf8;
+  background: rgba(129, 140, 248, 0.1);
   pointer-events: none;
 }
 
@@ -337,7 +343,7 @@
 }
 
 .source-item:hover {
-  border-color: #007bff;
+  border-color: #6366f1;
 }
 
 .source-item img {
@@ -379,41 +385,43 @@
 }
 
 .new-path-btn {
-    background-color: #0c6d1a;
+    background-color: #4f46e5;
     color: white;
     border: none;
     padding: 6px 12px;
-    border-radius: 6px;
+    border-radius: 0.5rem;
     font-size: 12px;
     font-weight: 500;
+    letter-spacing: 0.025em;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .new-path-btn:hover {
-    background-color: #4caf50;
+    background-color: #6366f1;
 }
 
 .paths-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #3a3a3a;
-    border-radius: 8px;
+    background-color: #383a41;
+    border-radius: 0.5rem;
     overflow: hidden;
 }
 
 .paths-table th,
 .paths-table td {
-    padding: 12px;
+    padding: 0.75rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #4a4a4a;
+    border-bottom: 1px solid #4c4f57;
 }
 
 .paths-table th {
-    background-color: #2a2a2a;
+    background-color: #232429;
     font-size: 12px;
-    color: #b0b0b0;
+    color: #b7bac4;
     font-weight: 500;
+    text-transform: uppercase;
 }
 
 .paths-table td {
@@ -425,26 +433,26 @@
 }
 
 .paths-table tr:hover {
-    background-color: #444444;
+    background-color: rgba(42, 44, 50, 0.5);
 }
 
 .delete-btn {
-    background-color: #d32f2f;
+    background-color: #ff4f1a;
     color: white;
     border: none;
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: 0.5rem;
     font-size: 11px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .delete-btn:hover {
-    background-color: #f44336;
+    background-color: #ff6933;
 }
 
 .delete-btn:disabled {
-    background-color: #666;
+    background-color: #4c4f57;
     cursor: not-allowed;
 }
 
@@ -456,7 +464,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(14, 15, 17, 0.7);
     z-index: 1000;
     justify-content: center;
     align-items: center;
@@ -467,10 +475,11 @@
 }
 
 .modal {
-    background-color: #2d2d2d;
-    border-radius: 8px;
+    background-color: #232429;
+    border-radius: 0.5rem;
     padding: 20px;
     width: 300px;
+    box-shadow: 0 3px 10px 0 rgb(25 25 25 / 30%);
 }
 
 .modal-title {
@@ -481,18 +490,21 @@
 
 .modal-input {
     width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    background-color: #3a3a3a;
-    color: white;
-    font-size: 14px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    background-color: #383a41;
+    color: #d0d2db;
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
     margin-bottom: 12px;
     box-sizing: border-box;
+    transition: border-color 0.2s ease-in-out;
 }
 
 .modal-input:focus {
-    outline: 2px solid #4caf50;
+    outline: none;
+    border-color: #6366f1;
 }
 
 .modal-buttons {
@@ -504,28 +516,30 @@
 .modal-btn {
     padding: 8px 16px;
     border: none;
-    border-radius: 6px;
-    font-size: 13px;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .modal-btn.cancel {
-    background-color: #4a4a4a;
+    background-color: #4c4f57;
     color: white;
 }
 
 .modal-btn.cancel:hover {
-    background-color: #5a5a5a;
+    background-color: #383a41;
 }
 
 .modal-btn.save {
-    background-color: #0c6d1a;
+    background-color: #4f46e5;
     color: white;
 }
 
 .modal-btn.save:hover {
-    background-color: #4caf50;
+    background-color: #6366f1;
 }
 
 .path-selector {
@@ -543,8 +557,8 @@
 .browse-btn {
     padding: 10px 14px;
     border: none;
-    border-radius: 6px;
-    background-color: #4a4a4a;
+    border-radius: 0.5rem;
+    background-color: #4c4f57;
     color: white;
     font-size: 13px;
     cursor: pointer;
@@ -553,15 +567,15 @@
 }
 
 .browse-btn:hover {
-    background-color: #5a5a5a;
+    background-color: #383a41;
 }
 
 .back-btn {
     margin-top: 16px;
     padding: 8px 16px;
     border: none;
-    border-radius: 6px;
-    background-color: #4a4a4a;
+    border-radius: 0.5rem;
+    background-color: #4c4f57;
     color: white;
     font-size: 13px;
     cursor: pointer;
@@ -569,7 +583,35 @@
 }
 
 .back-btn:hover {
-    background-color: #5a5a5a;
+    background-color: #383a41;
+}
+
+/* Custom scrollbar */
+#files::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+#files::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#files::-webkit-scrollbar-thumb {
+    background: #4c4f57;
+    border-radius: 9999px;
+}
+
+#files::-webkit-scrollbar-thumb:hover {
+    background: #838794;
+}
+
+/* Disabled button states */
+.capture-btn:disabled,
+.modal-btn:disabled,
+.new-path-btn:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
 }
     </style>
 </head>
