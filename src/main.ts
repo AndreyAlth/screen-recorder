@@ -12,6 +12,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 400,
     height: 600,
+    icon: path.join(__dirname, '../public/icons/release/png/512x512.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preloads/preload.js'),
       nodeIntegration: false,
@@ -19,7 +20,6 @@ function createWindow() {
       devTools: true
     },
     frame: false
-
   });
 
   mainWindow.loadFile(path.join(__dirname, 'index.html'));

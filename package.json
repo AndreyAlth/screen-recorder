@@ -7,7 +7,8 @@
     "start": "electron-forge start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "build:icons": "electron-icon-builder --input=./src/public/icon.png --output=./src/public/"
   },
   "keywords": [],
   "author": "andreyalth",
@@ -26,6 +27,7 @@
     "@types/node": "^25.0.3",
     "copyfiles": "^2.4.1",
     "electron": "^39.2.7",
+    "electron-icon-builder": "^2.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
