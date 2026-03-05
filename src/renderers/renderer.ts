@@ -45,6 +45,12 @@ selectionbtn?.addEventListener('click', () => {
 //show images
 window.files.setFiles((sources: ScreenSource[]) => {
     console.log(sources)
+    
+    // Expand window when files arrive
+    if (sources && sources.length > 0 && window.menu && window.menu.resizeWindow) {
+        window.menu.resizeWindow(400, 600)
+    }
+
     const filesDiv = document.getElementById('files')
     if (!filesDiv) return
     

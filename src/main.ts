@@ -11,7 +11,7 @@ let selectionWindows: BrowserWindow[] = [];
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 400,
-    height: 600,
+    height: 250,
     icon: path.join(__dirname, '../public/icons/release/png/512x512.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preloads/preload.js'),
@@ -30,6 +30,10 @@ function createWindow() {
 
   ipcMain.on('cancel', () => {
     mainWindow?.close();
+  });
+
+  ipcMain.on('resize-window', (event, width, height) => {
+    mainWindow?.setSize(width, height, true);
   });
 }
 

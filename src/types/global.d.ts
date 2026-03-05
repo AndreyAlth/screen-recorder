@@ -48,6 +48,7 @@ declare global {
             capture: () => void
             hide: () => void
             cancel: () => void
+            resizeWindow: (width: number, height: number) => void
         }
         captureArea: {
             screen: () => void

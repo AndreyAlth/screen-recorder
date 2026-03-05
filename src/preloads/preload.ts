@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('menu', {
   capture: () => ipcRenderer.send('capture'),
   hide: () => ipcRenderer.send('hide'),
   cancel: () => ipcRenderer.send('cancel'),
+  resizeWindow: (width: number, height: number) => ipcRenderer.send('resize-window', width, height),
 })
 
 contextBridge.exposeInMainWorld('captureArea', {
