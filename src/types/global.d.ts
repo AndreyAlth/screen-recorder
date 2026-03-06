@@ -43,12 +43,18 @@ interface PathsAPI {
 }
 
 declare global {
+    interface ViewerAPI {
+        onLoadImage: (callback: (dataUrl: string) => void) => void;
+        close: () => void;
+    }
+
     interface Window {
         menu: {
             capture: () => void
             hide: () => void
             cancel: () => void
             resizeWindow: (width: number, height: number) => void
+            openViewer: (dataUrl: string) => void
         }
         captureArea: {
             screen: () => void
@@ -64,6 +70,7 @@ declare global {
             setFiles: (callback: (sources: ScreenSource[]) => void) => void
         },
         selectionAPI: SelectionAPI,
-        pathsAPI: PathsAPI
+        pathsAPI: PathsAPI,
+        viewerAPI: ViewerAPI
     }
 }

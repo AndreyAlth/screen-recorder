@@ -35,6 +35,41 @@ function createWindow() {
   ipcMain.on('resize-window', (event, width, height) => {
     mainWindow?.setSize(width, height, true);
   });
+
+  let viewerWindow: BrowserWindow | null = null;
+  ipcMain.on('open-viewer', (event, dataUrl: string) => {
+    if (viewerWindow) {
+        viewerWindow.focus();
+        viewerWindow.webContents.send('load-image', dataUrl);
+        return;
+    }
+
+    viewerWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        frame: false,
+        transparent: true,
+        webPreferences: {
+            preload: path.join(__dirname, 'preloads/preload.js'),
+            contextIsolation: true,
+            nodeIntegration: false
+        }
+    });
+
+    viewerWindow.loadFile(path.join(__dirname, 'viewer.html'));
+
+    viewerWindow.webContents.once('did-finish-load', () => {
+        viewerWindow?.webContents.send('load-image', dataUrl);
+    });
+
+    viewerWindow.on('closed', () => {
+        viewerWindow = null;
+    });
+  });
+
+  ipcMain.on('close-viewer', () => {
+      viewerWindow?.close();
+  });
 }
 
 app.on('ready', () => {

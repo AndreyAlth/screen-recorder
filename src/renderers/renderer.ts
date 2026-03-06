@@ -120,6 +120,25 @@ window.files.setFiles((sources: ScreenSource[]) => {
             opacity: 0;
             transition: opacity 0.2s, background-color 0.2s;
         `
+
+        // Create watch button
+        const watchBtn = document.createElement('button')
+        watchBtn.textContent = 'watch'
+        watchBtn.title = 'Watch'
+        watchBtn.style.cssText = `
+            position: absolute;
+            bottom: 35px;
+            right: 56px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 0.5rem;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, background-color 0.2s;
+        `
         
         // Load image and draw to canvas
         const img = new Image()
@@ -180,21 +199,41 @@ window.files.setFiles((sources: ScreenSource[]) => {
                 saveBtn.style.backgroundColor = '#4f46e5'
             }
         })
+
+        // Watch button click handler
+        watchBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
+            const dataUrl = canvas.toDataURL('image/png')
+            if (window.menu && window.menu.openViewer) {
+                window.menu.openViewer(dataUrl)
+            }
+        })
+        
+        // Hover effect for watch button
+        watchBtn.addEventListener('mouseenter', () => {
+            watchBtn.style.backgroundColor = '#6366f1'
+        })
+        watchBtn.addEventListener('mouseleave', () => {
+            watchBtn.style.backgroundColor = '#4f46e5'
+        })
         
         // Add hover effect
         sourceContainer.addEventListener('mouseenter', () => {
             sourceContainer.style.borderColor = '#6366f1'
             saveBtn.style.opacity = '1'
+            watchBtn.style.opacity = '1'
         })
         sourceContainer.addEventListener('mouseleave', () => {
             sourceContainer.style.borderColor = 'transparent'
             saveBtn.style.opacity = '0'
+            watchBtn.style.opacity = '0'
         })
         
         // Append elements
         sourceContainer.appendChild(canvas)
         sourceContainer.appendChild(label)
         sourceContainer.appendChild(saveBtn)
+        sourceContainer.appendChild(watchBtn)
         filesDiv.appendChild(sourceContainer)
     })
 })

@@ -5,6 +5,14 @@ contextBridge.exposeInMainWorld('menu', {
   hide: () => ipcRenderer.send('hide'),
   cancel: () => ipcRenderer.send('cancel'),
   resizeWindow: (width: number, height: number) => ipcRenderer.send('resize-window', width, height),
+  openViewer: (dataUrl: string) => ipcRenderer.send('open-viewer', dataUrl),
+})
+
+contextBridge.exposeInMainWorld('viewerAPI', {
+    onLoadImage: (callback: (dataUrl: string) => void) => {
+        ipcRenderer.on('load-image', (_event, dataUrl) => callback(dataUrl))
+    },
+    close: () => ipcRenderer.send('close-viewer')
 })
 
 contextBridge.exposeInMainWorld('captureArea', {
