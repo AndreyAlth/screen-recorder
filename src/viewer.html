@@ -42,6 +42,35 @@
             color: #e6e7eb;
             font-size: 0.875rem;
             font-weight: 500;
+            flex: 1;
+        }
+
+        .tools {
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+            margin-right: auto;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: transparent;
+            color: #e6e7eb;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .tool-btn:hover {
+            background-color: rgba(76, 79, 87, 0.5);
         }
 
         .window-controls {
@@ -69,12 +98,128 @@
             background-color: rgba(76, 79, 87, 0.5);
         }
 
-        img {
+        .image-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        img,
+        canvas {
+            position: absolute;
             max-width: 100%;
             max-height: 100vh;
             object-fit: contain;
             user-select: none;
             -webkit-user-drag: none;
+        }
+
+        canvas {
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        canvas.active {
+            pointer-events: auto;
+            cursor: crosshair;
+        }
+
+        .tool-btn.active {
+            background-color: rgba(76, 79, 87, 0.8);
+            color: #6366f1;
+        }
+
+        /* Drawing Sub-toolbar */
+        .drawing-toolbar {
+            position: absolute;
+            right: 16px;
+            top: 70px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            background-color: rgba(35, 36, 41, 0.8);
+            padding: 8px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+
+        .drawing-toolbar.active {
+            display: flex;
+        }
+
+        .toolbar-item-container {
+            position: relative;
+        }
+
+        .popout-menu {
+            position: absolute;
+            right: calc(100% + 12px);
+            top: 0;
+            display: none;
+            background-color: rgba(35, 36, 41, 0.9);
+            padding: 8px;
+            border-radius: 8px;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .popout-menu.active {
+            display: flex;
+        }
+
+        .popout-menu.column-menu {
+            flex-direction: column;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.1s, border-color 0.1s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: #e6e7eb;
+        }
+
+        .color-preview {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #e6e7eb;
+        }
+
+        .thickness-option {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .thickness-option:hover,
+        .thickness-option.active {
+            background-color: rgba(76, 79, 87, 0.5);
+        }
+
+        .thickness-line {
+            width: 24px;
+            background-color: #e6e7eb;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -83,24 +228,249 @@
     <!-- Header -->
     <div class="header">
         <div class="header-title">Viewer</div>
+        <div class="tools">
+            <button class="tool-btn" id="textBtn" title="Add Text">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="5 20 12 4 19 20"></polyline>
+                    <line x1="8" y1="14" x2="16" y2="14"></line>
+                </svg>
+            </button>
+            <button class="tool-btn" id="drawBtn" title="Draw">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.17 3.22a2.83 2.83 0 0 0-4 0L3 17.38V21h3.62L20.78 6.82a2.83 2.83 0 0 0 .39-3.6z">
+                    </path>
+                    <path d="M15.5 5.5L18.5 8.5"></path>
+                </svg>
+            </button>
+        </div>
         <div class="window-controls">
             <button class="window-btn" id="closeBtn">×</button>
         </div>
     </div>
 
-    <!-- Image -->
-    <img id="viewerImage" src="" alt="Captured Image">
+    <!-- Image Area -->
+    <div class="image-container">
+        <img id="viewerImage" src="" alt="Captured Image">
+        <canvas id="drawCanvas"></canvas>
+    </div>
+
+    <!-- Drawing Toolbar -->
+    <div class="drawing-toolbar" id="drawingToolbar">
+        <!-- Eraser -->
+        <button class="tool-btn" id="eraserBtn" title="Eraser">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M20 20H7L3 16C2.5 15.5 2.5 14.5 3 14L13 4C13.5 3.5 14.5 3.5 15 4L20 9C20.5 9.5 20.5 10.5 20 11L11 20H20V20Z">
+                </path>
+                <path d="M6 11L13 18"></path>
+            </svg>
+        </button>
+
+        <!-- Colors -->
+        <div class="toolbar-item-container">
+            <button class="tool-btn" id="colorMenuBtn" title="Colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" id="colorIconPath" fill="#ff0000"></path>
+                </svg>
+            </button>
+            <div class="popout-menu" id="colorMenu">
+                <button class="color-option active" data-color="#ff0000" style="background-color: #ff0000;"></button>
+                <button class="color-option" data-color="#f97316" style="background-color: #f97316;"></button>
+                <button class="color-option" data-color="#eab308" style="background-color: #eab308;"></button>
+                <button class="color-option" data-color="#22c55e" style="background-color: #22c55e;"></button>
+                <button class="color-option" data-color="#3b82f6" style="background-color: #3b82f6;"></button>
+                <button class="color-option" data-color="#a855f7" style="background-color: #a855f7;"></button>
+                <button class="color-option" data-color="#ec4899" style="background-color: #ec4899;"></button>
+                <button class="color-option" data-color="#ffffff" style="background-color: #ffffff;"></button>
+                <button class="color-option" data-color="#000000" style="background-color: #000000;"></button>
+            </div>
+        </div>
+
+        <!-- Thickness -->
+        <div class="toolbar-item-container">
+            <button class="tool-btn" id="thicknessMenuBtn" title="Line Thickness">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="popout-menu column-menu" id="thicknessMenu">
+                <button class="thickness-option" data-thickness="thin" title="Thin">
+                    <div class="thickness-line" style="height: 2px;"></div>
+                </button>
+                <button class="thickness-option active" data-thickness="medium" title="Medium">
+                    <div class="thickness-line" style="height: 4px;"></div>
+                </button>
+                <button class="thickness-option" data-thickness="bold" title="Bold">
+                    <div class="thickness-line" style="height: 8px;"></div>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
+        const viewerImage = document.getElementById('viewerImage');
+        const drawCanvas = document.getElementById('drawCanvas');
+        const drawBtn = document.getElementById('drawBtn');
+        const ctx = drawCanvas.getContext('2d');
+
+        // New Elements
+        const drawingToolbar = document.getElementById('drawingToolbar');
+        const eraserBtn = document.getElementById('eraserBtn');
+        const colorMenuBtn = document.getElementById('colorMenuBtn');
+        const colorMenu = document.getElementById('colorMenu');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const colorIconPath = document.getElementById('colorIconPath');
+        const thicknessMenuBtn = document.getElementById('thicknessMenuBtn');
+        const thicknessMenu = document.getElementById('thicknessMenu');
+        const thicknessOptions = document.querySelectorAll('.thickness-option');
+
+        let isDrawingMode = false;
+        let isDrawing = false;
+        let isEraserMode = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        let baseThickness = 2;
+        let thicknessMultiplier = 1;
+
+        function updateThickness() {
+            ctx.lineWidth = baseThickness * thicknessMultiplier;
+        }
+
         // Set the image source
         window.viewerAPI.onLoadImage((dataUrl) => {
-            document.getElementById('viewerImage').src = dataUrl;
+            viewerImage.onload = () => {
+                // Match canvas resolution to image natural resolution
+                drawCanvas.width = viewerImage.naturalWidth;
+                drawCanvas.height = viewerImage.naturalHeight;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                baseThickness = Math.max(2, Math.floor(viewerImage.naturalWidth / 250)); // Responsive line width
+                updateThickness();
+                ctx.strokeStyle = '#ff0000'; // Default red color
+            };
+            viewerImage.src = dataUrl;
         });
 
         // Close window
         document.getElementById('closeBtn').addEventListener('click', () => {
             window.viewerAPI.close();
         });
+
+        // Toggle draw mode
+        drawBtn.addEventListener('click', () => {
+            isDrawingMode = !isDrawingMode;
+            drawBtn.classList.toggle('active', isDrawingMode);
+            drawCanvas.classList.toggle('active', isDrawingMode);
+            drawingToolbar.classList.toggle('active', isDrawingMode);
+
+            if (!isDrawingMode) {
+                // Hide sub-menus when closing draw mode
+                colorMenu.classList.remove('active');
+                thicknessMenu.classList.remove('active');
+            }
+        });
+
+        // Eraser logic
+        eraserBtn.addEventListener('click', () => {
+            isEraserMode = !isEraserMode;
+            eraserBtn.classList.toggle('active', isEraserMode);
+            ctx.globalCompositeOperation = isEraserMode ? 'destination-out' : 'source-over';
+        });
+
+        // Color Menu logic
+        colorMenuBtn.addEventListener('click', () => {
+            colorMenu.classList.toggle('active');
+            thicknessMenu.classList.remove('active');
+        });
+
+        colorOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const color = btn.dataset.color;
+                ctx.strokeStyle = color;
+                colorIconPath.setAttribute('fill', color);
+
+                // turn off eraser if active
+                if (isEraserMode) {
+                    isEraserMode = false;
+                    eraserBtn.classList.remove('active');
+                    ctx.globalCompositeOperation = 'source-over';
+                }
+
+                colorOptions.forEach(o => o.classList.remove('active'));
+                btn.classList.add('active');
+                colorMenu.classList.remove('active');
+            });
+        });
+
+        // Thickness Menu logic
+        thicknessMenuBtn.addEventListener('click', () => {
+            thicknessMenu.classList.toggle('active');
+            colorMenu.classList.remove('active');
+        });
+
+        thicknessOptions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const thickness = btn.dataset.thickness;
+                if (thickness === 'thin') thicknessMultiplier = 0.5;
+                if (thickness === 'medium') thicknessMultiplier = 1;
+                if (thickness === 'bold') thicknessMultiplier = 2;
+
+                updateThickness();
+
+                thicknessOptions.forEach(o => o.classList.remove('active'));
+                btn.classList.add('active');
+                thicknessMenu.classList.remove('active');
+            });
+        });
+
+        // Helper to get mouse coordinates mapped to canvas resolution
+        function getMousePos(e) {
+            const rect = drawCanvas.getBoundingClientRect();
+            const scaleX = drawCanvas.width / rect.width;
+            const scaleY = drawCanvas.height / rect.height;
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        // Draw events
+        drawCanvas.addEventListener('mousedown', (e) => {
+            if (!isDrawingMode || e.button !== 0) return; // Only left click
+            isDrawing = true;
+            const pos = getMousePos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+
+            // Draw a dot immediately for single clicks
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
+        });
+
+        drawCanvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            lastX = pos.x;
+            lastY = pos.y;
+        });
+
+        drawCanvas.addEventListener('mouseup', () => isDrawing = false);
+        drawCanvas.addEventListener('mouseout', () => isDrawing = false);
+
     </script>
 </body>
 
