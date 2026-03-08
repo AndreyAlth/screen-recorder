@@ -19,8 +19,8 @@ function createWindow() {
       contextIsolation: true,
       devTools: true
     },
-    // frame: false,
-    frame: true
+    frame: false
+    // frame: true
   });
 
   mainWindow.loadFile(path.join(__dirname, '../index.html'));
