@@ -221,6 +221,16 @@
             background-color: #e6e7eb;
             border-radius: 2px;
         }
+
+        @keyframes flashFade {
+            0% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -497,10 +507,35 @@
 
             const dataUrl = tempCanvas.toDataURL('image/png');
 
+            // Try saving the finalized image through the Electron IPC bridge
+            // 1. If successful (path returned), button turns green (#22c55e) and it plays a sound
+            // 2. If no path is returned, the save was likely cancelled
+            // 3. If an error is thrown, button turns red (#ef4444)
+            // 4. In all cases but an explicit abort, the button color resets to its original in 1.5s
             if (window.screenAPI && window.screenAPI.saveScreenshot) {
                 window.screenAPI.saveScreenshot('viewer_screenshot', dataUrl).then((path) => {
                     if (path) {
                         saveBtn.style.color = '#22c55e'; // Green
+                        const audio = new Audio('./public/screenshot-sound.mp3');
+                        audio.play().catch(e => console.error("Audio playback failed", e));
+
+                        // Screenshot flash effect
+                        const flash = document.createElement('div')
+                        flash.style.cssText = `
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-color: white;
+                            opacity: 0.8;
+                            border-radius: 12px;
+                            pointer-events: none;
+                            animation: flashFade 0.3s ease-out forwards;
+                            z-index: 1000;
+                        `
+                        document.body.appendChild(flash)
+                        setTimeout(() => flash.remove(), 300)
                     } else {
                         saveBtn.style.color = originalColor;
                     }
