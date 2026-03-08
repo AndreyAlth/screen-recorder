@@ -48,7 +48,7 @@ window.files.setFiles((sources: ScreenSource[]) => {
     
     // Expand window when files arrive
     if (sources && sources.length > 0 && window.menu && window.menu.resizeWindow) {
-        window.menu.resizeWindow(400, 600)
+        window.menu.resizeWindow(400, 370)
     }
 
     const filesDiv = document.getElementById('files')
