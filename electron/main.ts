@@ -19,10 +19,11 @@ function createWindow() {
       contextIsolation: true,
       devTools: true
     },
-    frame: false
+    // frame: false,
+    frame: true
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, '../index.html'));
 
   ipcMain.on('hide', () => {
     mainWindow?.minimize();
@@ -56,7 +57,7 @@ function createWindow() {
         }
     });
 
-    viewerWindow.loadFile(path.join(__dirname, 'viewer.html'));
+    viewerWindow.loadFile(path.join(__dirname, '../viewer.html'));
 
     viewerWindow.webContents.once('did-finish-load', () => {
         viewerWindow?.webContents.send('load-image', dataUrl);
@@ -275,7 +276,7 @@ async function captureSection() {
     });
 
     // Load selection HTML
-    selectionWindow.loadFile(path.join(__dirname, 'selection.html'));
+    selectionWindow.loadFile(path.join(__dirname, '../selection.html'));
 
     // Send screenshot data to this window once ready
     // Include display bounds so we can calculate offset if window position differs
