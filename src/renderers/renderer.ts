@@ -48,7 +48,7 @@ window.files.setFiles((sources: ScreenSource[]) => {
     
     // Expand window when files arrive
     if (sources && sources.length > 0 && window.menu && window.menu.resizeWindow) {
-        window.menu.resizeWindow(400, 370)
+        window.menu.resizeWindow(400, 400)
     }
 
     const filesDiv = document.getElementById('files')
@@ -63,6 +63,9 @@ window.files.setFiles((sources: ScreenSource[]) => {
         flex-wrap: wrap;
         gap: 10px;
         align-items: flex-start;
+        overflow-y: auto;
+        max-height: 250px;
+        padding-right: 5px;
     `
 
     // Determine item width based on number of sources
