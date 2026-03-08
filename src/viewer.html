@@ -244,6 +244,14 @@
                     <path d="M15.5 5.5L18.5 8.5"></path>
                 </svg>
             </button>
+            <button class="tool-btn" id="saveBtn" title="Save Image">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+            </button>
         </div>
         <div class="window-controls">
             <button class="window-btn" id="closeBtn">×</button>
@@ -318,6 +326,7 @@
         const viewerImage = document.getElementById('viewerImage');
         const drawCanvas = document.getElementById('drawCanvas');
         const drawBtn = document.getElementById('drawBtn');
+        const saveBtn = document.getElementById('saveBtn');
         const ctx = drawCanvas.getContext('2d');
 
         // New Elements
@@ -470,6 +479,40 @@
 
         drawCanvas.addEventListener('mouseup', () => isDrawing = false);
         drawCanvas.addEventListener('mouseout', () => isDrawing = false);
+
+        // Save Image
+        saveBtn.addEventListener('click', () => {
+            const originalColor = saveBtn.style.color;
+            saveBtn.style.color = '#a855f7'; // Purple
+
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = drawCanvas.width;
+            tempCanvas.height = drawCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            // Draw original image
+            tempCtx.drawImage(viewerImage, 0, 0, tempCanvas.width, tempCanvas.height);
+            // Draw drawing canvas
+            tempCtx.drawImage(drawCanvas, 0, 0);
+
+            const dataUrl = tempCanvas.toDataURL('image/png');
+
+            if (window.screenAPI && window.screenAPI.saveScreenshot) {
+                window.screenAPI.saveScreenshot('viewer_screenshot', dataUrl).then((path) => {
+                    if (path) {
+                        saveBtn.style.color = '#22c55e'; // Green
+                    } else {
+                        saveBtn.style.color = originalColor;
+                    }
+                    setTimeout(() => saveBtn.style.color = originalColor, 1500);
+                }).catch(() => {
+                    saveBtn.style.color = '#ef4444'; // Red
+                    setTimeout(() => saveBtn.style.color = originalColor, 1500);
+                });
+            } else {
+                saveBtn.style.color = originalColor;
+            }
+        });
 
     </script>
 </body>
