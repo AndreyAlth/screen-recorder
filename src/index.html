@@ -11,20 +11,32 @@
             box-sizing: border-box;
         }
 
-        html {
-            background: transparent;
+        html,
+        body {
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
             font-family: Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-            background-color: #2a2c32;
             color: #e6e7eb;
             font-size: 0.875rem;
             line-height: 1.25rem;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
             user-select: none;
-            border-radius: 12px;
+        }
+
+        /* Container that actually holds the UI and has rounded corners */
+        .app-container {
+            width: 100%;
+            height: 100%;
+            background-color: #2a2c32;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
 
@@ -618,78 +630,79 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-left">
-            <button class="capture-btn" id="captureBtn">Capturar</button>
-            <div class="path-container">
-                <select class="path-select" name="pathSelect" id="pathSelect">
-                </select>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <button class="capture-btn" id="captureBtn">Capturar</button>
+                <div class="path-container">
+                    <select class="path-select" name="pathSelect" id="pathSelect">
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="window-controls">
-            <button class="window-btn" id="menuBtn">📁</button>
-            <button class="window-btn" id="minimizeBtn">−</button>
-            <button class="window-btn" id="closeBtn">×</button>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="content">
-        <!-- Capture Section -->
-        <div class="capture-section" id="captureSection">
-            <div class="section-title">Área de captura</div>
-
-            <!-- Capture Options -->
-            <div class="capture-options">
-                <button class="capture-option active" data-mode="selection" id="selection">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2" />
-                        <rect x="8" y="8" width="8" height="8" fill="currentColor" opacity="0.3" />
-                    </svg>
-                    <span>Selección</span>
-                </button>
-                <button class="capture-option" data-mode="screen" id="screen">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"
-                            fill="none" />
-                        <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" />
-                        <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2" />
-                    </svg>
-                    <span>Pantalla</span>
-                </button>
-                <button class="capture-option" data-mode="window" id="window">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                    </svg>
-                    <span>Ventana</span>
-                </button>
+            <div class="window-controls">
+                <button class="window-btn" id="menuBtn">📁</button>
+                <button class="window-btn" id="minimizeBtn">−</button>
+                <button class="window-btn" id="closeBtn">×</button>
             </div>
         </div>
 
-        <!-- Folders Section -->
-        <div class="folders-section" id="foldersSection">
-            <div class="section-header">
-                <div class="section-title">Folders</div>
-                <button class="new-path-btn" id="newPathBtn">+ New Path</button>
-            </div>
-            <table class="paths-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Path</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="pathsTableBody">
-                    <!-- Paths will be populated by JavaScript -->
-                </tbody>
-            </table>
-            <button class="back-btn" id="backToCapture">← Back</button>
-        </div>
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Capture Section -->
+            <div class="capture-section" id="captureSection">
+                <div class="section-title">Área de captura</div>
 
-        <!-- Settings -->
-        <!-- <div class="settings-panel">
+                <!-- Capture Options -->
+                <div class="capture-options">
+                    <button class="capture-option active" data-mode="selection" id="selection">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2" />
+                            <rect x="8" y="8" width="8" height="8" fill="currentColor" opacity="0.3" />
+                        </svg>
+                        <span>Selección</span>
+                    </button>
+                    <button class="capture-option" data-mode="screen" id="screen">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"
+                                fill="none" />
+                            <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" />
+                            <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                        <span>Pantalla</span>
+                    </button>
+                    <button class="capture-option" data-mode="window" id="window">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                        </svg>
+                        <span>Ventana</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Folders Section -->
+            <div class="folders-section" id="foldersSection">
+                <div class="section-header">
+                    <div class="section-title">Folders</div>
+                    <button class="new-path-btn" id="newPathBtn">+ New Path</button>
+                </div>
+                <table class="paths-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Path</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pathsTableBody">
+                        <!-- Paths will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                <button class="back-btn" id="backToCapture">← Back</button>
+            </div>
+
+            <!-- Settings -->
+            <!-- <div class="settings-panel">
             <div class="setting-row">
                 <span class="setting-label">Mostrar puntero</span>
                 <div class="toggle active" id="showPointerToggle">
@@ -706,25 +719,26 @@
             </div>
         </div> -->
 
-        <!-- Files to shown -->
-        <div id="files">
+            <!-- Files to shown -->
+            <div id="files">
+            </div>
+
         </div>
 
-    </div>
-
-    <!-- New Path Modal -->
-    <div class="modal-overlay" id="newPathModal">
-        <div class="modal">
-            <div class="modal-title">New Path</div>
-            <input type="text" class="modal-input" id="newPathName" placeholder="Name (e.g., Desktop)">
-            <div class="path-selector">
-                <input type="text" class="modal-input path-input" id="newPathPath" placeholder="Select a folder..."
-                    readonly>
-                <button class="browse-btn" id="browsePathBtn">Browse</button>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" id="cancelNewPath">Cancel</button>
-                <button class="modal-btn save" id="saveNewPath">Save</button>
+        <!-- New Path Modal -->
+        <div class="modal-overlay" id="newPathModal">
+            <div class="modal">
+                <div class="modal-title">New Path</div>
+                <input type="text" class="modal-input" id="newPathName" placeholder="Name (e.g., Desktop)">
+                <div class="path-selector">
+                    <input type="text" class="modal-input path-input" id="newPathPath" placeholder="Select a folder..."
+                        readonly>
+                    <button class="browse-btn" id="browsePathBtn">Browse</button>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" id="cancelNewPath">Cancel</button>
+                    <button class="modal-btn save" id="saveNewPath">Save</button>
+                </div>
             </div>
         </div>
     </div>

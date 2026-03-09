@@ -8,6 +8,11 @@ let sourceType: SourceType = 'section';
 let mainWindow: BrowserWindow | null = null;
 let selectionWindows: BrowserWindow[] = [];
 
+// Enable transparent visuals for Linux DWMs that need it
+app.commandLine.appendSwitch('enable-transparent-visuals');
+app.commandLine.appendSwitch('disable-gpu');
+app.disableHardwareAcceleration();
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 400,
@@ -19,8 +24,10 @@ function createWindow() {
       contextIsolation: true,
       devTools: true
     },
-    frame: false
-    // frame: true
+    frame: false,
+    transparent: true,
+    hasShadow: false,
+    backgroundColor: '#00000000'
   });
 
   mainWindow.loadFile(path.join(__dirname, '../index.html'));
